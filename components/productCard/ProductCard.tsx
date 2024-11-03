@@ -1,8 +1,10 @@
 import { useThemeColor } from "@/hooks/useThemeColor";
 import React from "react";
-import { Image, ImageStyle, TouchableOpacity, ViewStyle } from "react-native";
+import { Dimensions, Image, ImageStyle, TouchableOpacity, useColorScheme, ViewStyle } from "react-native";
 import Row from "../row/Row";
 import ThemeText from "../themeText/ThemeText";
+import ThemeView from "../themeView/ThemeView";
+import { convertPrice } from "@/utils/convertPrice";
 
 interface ProductCardProps {
     imageUrls: string[];
@@ -14,6 +16,7 @@ interface ProductCardProps {
     imageStyle?: ImageStyle;
 }
 
+
 const ProductCard = ({
     imageUrls,
     price,
@@ -23,14 +26,24 @@ const ProductCard = ({
     onPress,
     imageStyle,
 }: ProductCardProps) => {
+    let width = Dimensions.get('screen').width / 2 - 32
+    const theme = useColorScheme() ?? 'light';
     return (
         <TouchableOpacity
             onPress={onPress}
             style={{
                 flex: 1,
                 backgroundColor: useThemeColor({}, "itemBackground"),
-                padding: 8,
                 borderRadius: 8,
+                shadowColor: theme === "light" ? "#000" : "#fff",
+                shadowOffset: {
+                    width: 0,
+                    height: 1,
+                },
+                shadowOpacity: 0.20,
+                shadowRadius: 1.41,
+
+                elevation: 2,
                 ...style,
             }}
         >
@@ -38,35 +51,65 @@ const ProductCard = ({
                 source={{
                     uri:
                         imageUrls[0] ??
-                        "https://anhanime.me/wp-content/uploads/2024/03/anh-nezuko_19.jpg",
+                        Image.resolveAssetSource(require('../../assets/images/unknownImage.jpg')).uri
                 }}
                 style={{
                     width: "100%",
-                    height: 100,
-                    objectFit: "contain",
+                    height: width,
+                    borderTopLeftRadius: 8,
+                    borderTopRightRadius: 8,
+                    objectFit: "cover",
                     ...imageStyle,
                 }}
             />
-            <Row
-                justifyContent="flex-start"
-                style={{
-                    marginTop: 8,
-                }}
-            >
-                <ThemeText text={title} type="medium" style={{}} />
-            </Row>
-            <Row justifyContent="flex-start" style={{}}>
-                <ThemeText
-                    text={price}
-                    type="small"
+            <ThemeView style={{
+                backgroundColor: useThemeColor({}, "itemBackground"),
+                padding: 8,
+                borderBottomLeftRadius: 8,
+                borderBottomRightRadius: 8,
+                display: "flex",
+                flexDirection: "column",
+            }}>
+                <Row
+                    justifyContent="flex-start"
+                    alignItems="flex-start"
                     style={{
-                        fontWeight: "bold",
+                        minHeight: 46,
                     }}
-                />
-            </Row>
-            <Row justifyContent="flex-start" style={{}}>
-                <ThemeText text={`Sold: ${sold}`} type="small" style={{}} />
-            </Row>
+                >
+                    <ThemeText text={title} type="medium" style={{
+                        fontWeight: "400",
+                    }}
+                        ellipsizeMode="tail"
+                        numOfLines={3}
+                    />
+                </Row>
+                <Row justifyContent="space-between" style={{
+                    marginTop: 8,
+                    flex: 1,
+                }}>
+                    <Row>
+                        <ThemeText text={`Sold: `} type="small" style={{}} />
+                        <ThemeText text={sold.toString()} type="small" style={{ fontWeight: "bold" }} />
+                    </Row>
+                    <Row>
+                        <ThemeText
+                            text={convertPrice(parseInt(price))}
+                            type="medium"
+                            style={{
+                                fontWeight: "bold",
+                            }}
+                        />
+                        <ThemeText
+                            text=" vnđ"
+                            type="small"
+                            style={{
+                                fontWeight: "500",
+                            }}
+                        />
+                    </Row>
+                </Row>
+            </ThemeView>
         </TouchableOpacity>
     );
 };

@@ -1,21 +1,21 @@
 import {
-    DarkTheme,
-    DefaultTheme,
-    ThemeProvider,
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
 
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { Slot } from "expo-router";
 import { AuthProvider } from "@/context/auth";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { AlertNotificationRoot } from "react-native-alert-notification";
-import { StatusBar } from "expo-status-bar";
-import { useThemeColor } from "@/hooks/useThemeColor";
 import { CartProvider } from "@/context/cart";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { Slot } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import Toast from 'react-native-toast-message';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -41,11 +41,6 @@ export default function RootLayout() {
         <AuthProvider>
             <CartProvider>
                 <GestureHandlerRootView style={{ flex: 1 }}>
-                    <AlertNotificationRoot
-                        toastConfig={{
-                            autoClose: 3000,
-                        }}
-                    >
                         <ThemeProvider
                             value={
                                 colorScheme === "dark"
@@ -54,14 +49,12 @@ export default function RootLayout() {
                             }
                         >
                             <StatusBar
-                                style={
-                                    colorScheme === "dark" ? "light" : "dark"
-                                }
+                                style="auto"
                                 backgroundColor={backgroundColorTheme}
                             />
                             <Slot />
+                            <Toast autoHide position="top" />
                         </ThemeProvider>
-                    </AlertNotificationRoot>
                 </GestureHandlerRootView>
             </CartProvider>
         </AuthProvider>

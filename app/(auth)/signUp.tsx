@@ -8,6 +8,7 @@ import ThemeView from "@/components/themeView/ThemeView";
 import { useAuth } from "@/context/auth";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { Href, router } from "expo-router";
+import Toast from 'react-native-toast-message';
 import {
     EmojiSad,
     Facebook,
@@ -17,7 +18,6 @@ import {
     Personalcard,
 } from "iconsax-react-native";
 import React from "react";
-import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 
 const SignUp = () => {
     const { signUp } = useAuth();
@@ -97,23 +97,19 @@ const SignUp = () => {
                 onPress={async () => {
                     if (!fullName || !email || !password || !confirmPassword) {
                         Toast.show({
-                            type: ALERT_TYPE.WARNING,
-                            title: "Warning",
-                            textBody: "Please fill all fields",
-                            titleStyle: { color: "black" },
-                            autoClose: true,
-                        });
+                            type: 'error',
+                            text1: 'Error',
+                            text2: 'All fields are required',
+                        })
                         return;
                     }
 
                     if (password !== confirmPassword) {
                         Toast.show({
-                            type: ALERT_TYPE.WARNING,
-                            title: "Warning",
-                            textBody:
-                                "Password and Confirm password do not match",
-                            titleStyle: { color: "black" },
-                            autoClose: true,
+                            type: 'error',
+                            position: 'top',
+                            text1: 'Error',
+                            text2: 'Password does not match',
                         });
                         return;
                     }
@@ -134,29 +130,26 @@ const SignUp = () => {
                         const errorDetail = error.errors;
                         if (errorDetail.fullname) {
                             Toast.show({
-                                type: ALERT_TYPE.WARNING,
-                                title: "Warning",
-                                textBody: error.errors.fullname[0],
-                                titleStyle: { color: "black" },
-                                autoClose: true,
+                                type: 'error',
+                                position: 'top',
+                                text1: 'Error',
+                                text2: errorDetail.fullname[0],
                             });
                         }
                         if (errorDetail.email) {
                             Toast.show({
-                                type: ALERT_TYPE.WARNING,
-                                title: "Warning",
-                                textBody: error.errors.email[0],
-                                titleStyle: { color: "black" },
-                                autoClose: true,
+                                type: 'error',
+                                position: 'top',
+                                text1: 'Error',
+                                text2: errorDetail.email[0],
                             });
                         }
                         if (errorDetail.password) {
                             Toast.show({
-                                type: ALERT_TYPE.WARNING,
-                                title: "Warning",
-                                textBody: error.errors.password[0],
-                                titleStyle: { color: "black" },
-                                autoClose: true,
+                                type: 'error',
+                                position: 'top',
+                                text1: 'Error',
+                                text2: errorDetail.password[0],
                             });
                         }
 

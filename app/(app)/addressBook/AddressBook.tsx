@@ -20,7 +20,7 @@ import { router } from "expo-router";
 import { AddSquare, Back, Trash } from "iconsax-react-native";
 import React, { useEffect, useMemo, useRef } from "react";
 import { TouchableOpacity, View } from "react-native";
-import { ALERT_TYPE, Toast } from "react-native-alert-notification";
+import Toast from "react-native-toast-message";
 
 const AddressBook = () => {
     const [addressList, setAddressList] = React.useState<Address[]>([]);
@@ -132,10 +132,8 @@ const AddressBook = () => {
             !receiverStreetName
         ) {
             Toast.show({
-                title: "Error",
-                textBody: "Please fill all fields",
-                type: ALERT_TYPE.DANGER,
-                autoClose: true,
+                text1: "Please fill all fields",
+                type: 'error',
             });
 
             return;
@@ -166,10 +164,8 @@ const AddressBook = () => {
             setIsButtonAddLoading(false);
 
             Toast.show({
-                title: "Success",
-                textBody: "Add address successfully",
-                type: ALERT_TYPE.SUCCESS,
-                autoClose: true,
+                text1: "Add address successfully",
+                type: 'success',
             });
         } catch (error) {
             console.log(error);
@@ -180,10 +176,8 @@ const AddressBook = () => {
     const handleUpdateAddress = async () => {
         if (!receiverNameSelected || !receiverPhoneSelected) {
             Toast.show({
-                title: "Error",
-                textBody: "Please fill all fields",
-                type: ALERT_TYPE.DANGER,
-                autoClose: true,
+                text1: "Please fill all fields",
+                type: 'error',
             });
 
             return;
@@ -223,10 +217,8 @@ const AddressBook = () => {
             setIsButtonUpdateLoading(false);
 
             Toast.show({
-                title: "Success",
-                textBody: "Update address successfully",
-                type: ALERT_TYPE.SUCCESS,
-                autoClose: true,
+                text1: "Update address successfully",
+                type: 'success',
             });
         } catch (error) {
             console.log(error);
@@ -605,18 +597,14 @@ const AddressBook = () => {
                                 fetchAddressList();
                                 bottomSheetUpdateRef.current?.close();
                                 Toast.show({
-                                    title: "Success",
-                                    textBody: "Delete address successfully",
-                                    type: ALERT_TYPE.SUCCESS,
-                                    autoClose: true,
+                                    text1: "Delete address successfully",
+                                    type: 'success',
                                 });
                             } catch (error) {
                                 console.log(error);
                                 Toast.show({
-                                    title: "Error",
-                                    textBody: "Delete address failed",
-                                    type: ALERT_TYPE.DANGER,
-                                    autoClose: true,
+                                    text1: "Delete address failed",
+                                    type: 'error',
                                 });
                             }
                         }}

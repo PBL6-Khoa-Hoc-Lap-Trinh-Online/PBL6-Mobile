@@ -10,7 +10,7 @@ interface ButtonProps {
     text?: string;
     icon?: React.ReactNode;
     variant?: "circle" | "outline" | 'link' | 'fill';
-    color?: 'primary' | 'secondary' | 'danger' | 'text';
+    color?: 'primary' | 'secondary' | 'danger' | 'text' | 'border';
     onPress: () => void;
     style?: ViewStyle;
 
@@ -37,7 +37,7 @@ const Button = ({
                 onPress={onPress}
                 style={{
                     backgroundColor: "transparent",
-                    padding: 16,
+                    padding: 12,
                     borderRadius: 50,
                     display: "flex",
                     alignItems: "center",

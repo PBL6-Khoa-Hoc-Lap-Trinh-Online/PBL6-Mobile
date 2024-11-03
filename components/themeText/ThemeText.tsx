@@ -1,19 +1,18 @@
+import { useThemeColor } from "@/hooks/useThemeColor";
+import React from "react";
 import {
-    View,
     Text,
     TextProps,
-    Touchable,
-    ViewProps,
-    ViewStyle,
     TextStyle,
+    ViewStyle
 } from "react-native";
-import React from "react";
-import { useThemeColor } from "@/hooks/useThemeColor";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 interface TitleComponentProps {
     text?: string;
     type: "large" | "medium" | "small" | "link" | "title";
+    ellipsizeMode?: TextProps["ellipsizeMode"];
+    numOfLines?: number;
     children?: React.ReactNode;
     // link
     onPress?: () => void;
@@ -23,6 +22,8 @@ interface TitleComponentProps {
 
 const ThemeText = ({
     text,
+    ellipsizeMode="clip",
+    numOfLines=10,
     style,
     children,
     type = "large",
@@ -33,6 +34,8 @@ const ThemeText = ({
     if (type === "title")
         return (
             <Text
+                ellipsizeMode={ellipsizeMode}
+                numberOfLines={numOfLines}
                 style={{
                     color: textColorTheme,
                     fontSize: 18,
@@ -47,6 +50,8 @@ const ThemeText = ({
     if (type === "large")
         return (
             <Text
+                ellipsizeMode={ellipsizeMode}
+                numberOfLines={numOfLines}
                 style={{
                     color: textColorTheme,
                     fontSize: 36,
@@ -63,6 +68,8 @@ const ThemeText = ({
         return (
             <TouchableOpacity onPress={onPress}>
                 <Text
+                    ellipsizeMode={ellipsizeMode}
+                    numberOfLines={numOfLines}
                     style={{
                         color: useThemeColor({}, "link"),
                         fontSize: 14,
@@ -77,6 +84,8 @@ const ThemeText = ({
     if (type === "medium")
         return (
             <Text
+                ellipsizeMode={ellipsizeMode}
+                numberOfLines={numOfLines}
                 style={{
                     color: textColorTheme,
                     fontSize: 14,
@@ -91,6 +100,8 @@ const ThemeText = ({
     if (type === "small")
         return (
             <Text
+                ellipsizeMode={ellipsizeMode}
+                numberOfLines={numOfLines}
                 style={{
                     color: textColorTheme,
                     fontSize: 12,

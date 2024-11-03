@@ -4,11 +4,13 @@ import ThemeView from "@/components/themeView/ThemeView";
 import { CategoryType } from "@/type/categoryType";
 import { Href, router } from "expo-router";
 import React, { useEffect } from "react";
-import { ALERT_TYPE, Toast } from "react-native-alert-notification";
+import { Dimensions } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
+import Toast from "react-native-toast-message";
 
 const Categories = () => {
     const [search, setSearch] = React.useState("");
+    let width = Dimensions.get('screen').width/2 - 32
 
     const [categories, setCategories] = React.useState<CategoryType[]>([]);
     useEffect(() => {
@@ -18,10 +20,8 @@ const Categories = () => {
                 setCategories(rs.data);
             } catch (error: any) {
                 Toast.show({
-                    title: "Error",
-                    textBody: error.messages[0],
-                    type: ALERT_TYPE.DANGER,
-                    autoClose: true,
+                    text1: error.messages[0],
+                    type: 'error',
                 });
             }
         })();
@@ -31,6 +31,7 @@ const Categories = () => {
         <ThemeView>
             <FlatList
                 data={categories}
+                columnWrapperStyle={{justifyContent:'space-between', alignItems: 'flex-start'}}
                 renderItem={({ item }) => (
                     <CategoryCard
                         key={item.category_id}
@@ -42,12 +43,13 @@ const Categories = () => {
                                     item.category_id) as Href
                             );
                         }}
+                        style={{
+                            width:width, height:width, margin: 8, flex: 0
+                        }}
                     />
                 )}
                 keyExtractor={(item) => item.category_id.toString()}
                 numColumns={2}
-                contentContainerStyle={{ gap: 8 }}
-                columnWrapperStyle={{ gap: 8 }}
             />
         </ThemeView>
     );

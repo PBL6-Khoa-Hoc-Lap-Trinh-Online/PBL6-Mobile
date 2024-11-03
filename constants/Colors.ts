@@ -9,8 +9,8 @@ export const Colors = {
     text: '#11181C',
     icon: '#687076',
 
-    background: '#f9f9f9',
-    itemBackground: '#fff',
+    background: '#ffffff',
+    itemBackground: '#f5f7fa',
     border: '#ECECEC',
 
     link: '#1A51A2',
@@ -23,13 +23,13 @@ export const Colors = {
   },
   dark: {
     text: '#ECEDEE',
-    background: '#151718',
-    itemBackground: '#A8A8A9',
+    background: '#000',
+    itemBackground: '#141414',
     icon: '#9BA1A6',
-    border: '#ECECEC',
+    border: '#424242',
 
-    link: '#1A51A2',
-    primary: '#1A51A2',
+    link: '#FF885B',
+    primary: '#FF885B',
     secondary: '#FD6E87',
     danger: '#C62E2E',
 

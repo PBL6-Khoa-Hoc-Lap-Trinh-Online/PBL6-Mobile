@@ -12,6 +12,7 @@ import Row from "../row/Row";
 import Space from "../space/Space";
 import ThemeText from "../themeText/ThemeText";
 import CheckBox from "../checkBox/CheckBox";
+import { convertPrice } from "@/utils/convertPrice";
 
 interface CartCardProps {
     onPress?: () => void;
@@ -46,7 +47,6 @@ const CartCard = ({
             style={{
                 flex: 1,
                 backgroundColor: useThemeColor({}, "itemBackground"),
-                padding: 8,
                 borderRadius: 8,
                 ...style,
             }}
@@ -62,14 +62,19 @@ const CartCard = ({
                     style={{
                         width: 100,
                         height: 100,
+                        borderTopLeftRadius: 8,
+                        borderBottomLeftRadius: 8,
                         objectFit: "contain",
                         ...imageStyle,
                     }}
                 />
                 <View
                     style={{
-                        marginLeft: 12,
                         flex: 1,
+                        paddingLeft: 16,
+                        paddingRight: 8,
+                        paddingTop: 8,
+                        paddingBottom: 8,
                         flexDirection: "column",
                         justifyContent: "space-between",
                         height: "100%",
@@ -78,10 +83,12 @@ const CartCard = ({
                     <Row justifyContent="space-between" alignItems="flex-start">
                         <ThemeText
                             text={productName}
+                            numOfLines={4}
                             type="medium"
+                            ellipsizeMode="tail"
                             style={{
-                                fontWeight: "bold",
-                                width: "84%",
+                                fontWeight: "400",
+                                flex: 1
                             }}
                         />
                         <CheckBox
@@ -90,34 +97,41 @@ const CartCard = ({
                         />
                     </Row>
                     <Row justifyContent="space-between">
-                        <ThemeText text={`$${cartPrice}`} type="medium" />
+                        <Row>
+                            <ThemeText text={`${convertPrice(cartPrice)}`} type="medium" style={{
+                                fontWeight: "bold",
+                            }}/>
+                            <ThemeText text=" vnd" type="small" style={{
+                                fontWeight: "bold",
+                            }}/>
+                        </Row>
                         <Row>
                             <TouchableOpacity
                                 style={{
-                                    padding: 8,
+                                    padding: 4,
                                     borderRadius: 4,
-                                    backgroundColor: "#f1f1f1",
+                                    backgroundColor: useThemeColor({}, 'primary'),
                                 }}
                                 onPress={() => {
                                     cartQuantityChange(cartQuantity - 1);
                                 }}
                             >
-                                <Minus size={16} color="#000" />
+                                <Minus size={16} color={useThemeColor({}, 'white')} />
                             </TouchableOpacity>
-                            <Space size={{ width: 16, height: 0 }} />
+                            <Space size={{ width: 12, height: 0 }} />
                             <ThemeText text={`${cartQuantity}`} type="medium" />
-                            <Space size={{ width: 16, height: 0 }} />
+                            <Space size={{ width: 12, height: 0 }} />
                             <TouchableOpacity
                                 style={{
-                                    padding: 8,
+                                    padding: 4,
                                     borderRadius: 4,
-                                    backgroundColor: "#f1f1f1",
+                                    backgroundColor: useThemeColor({}, 'primary'),
                                 }}
                                 onPress={() => {
                                     cartQuantityChange(cartQuantity + 1);
                                 }}
                             >
-                                <Add size={16} color="#000" />
+                                <Add size={16} color={useThemeColor({}, 'white')} />
                             </TouchableOpacity>
                         </Row>
                     </Row>

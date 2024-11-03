@@ -16,7 +16,7 @@ import {
     Personalcard,
 } from "iconsax-react-native";
 import React from "react";
-import { ALERT_TYPE, Toast } from "react-native-alert-notification";
+import Toast from "react-native-toast-message";
 
 const SignIn = () => {
     const { signIn } = useAuth();
@@ -71,11 +71,9 @@ const SignIn = () => {
                         setIsLoading(false);
                     } catch (error: any) {
                         Toast.show({
-                            type: ALERT_TYPE.WARNING,
-                            title: "Warning",
-                            textBody: error.messages[0],
-                            titleStyle: { color: "black" },
-                            autoClose: true,
+                            type: "error",
+                            text1: "Warning",
+                            text2: error.messages[0],
                         });
                         setIsLoading(false);
                     }

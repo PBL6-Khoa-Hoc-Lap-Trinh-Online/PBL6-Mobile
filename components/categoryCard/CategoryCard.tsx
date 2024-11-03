@@ -5,6 +5,7 @@ import {
     ImageStyle,
     TextStyle,
     TouchableOpacity,
+    useColorScheme,
     ViewStyle,
 } from "react-native";
 import Row from "../row/Row";
@@ -18,6 +19,7 @@ interface CategoryCardProps {
     style?: ViewStyle;
     imageStyle?: ImageStyle;
     titleStyle?: TextStyle;
+    
 }
 
 const CategoryCard = ({
@@ -28,14 +30,25 @@ const CategoryCard = ({
     imageStyle,
     titleStyle,
 }: CategoryCardProps) => {
+    const theme = useColorScheme() ?? 'light';
     return (
         <TouchableOpacity
             onPress={onPress}
             style={{
                 flex: 1,
                 backgroundColor: useThemeColor({}, "itemBackground"),
-                padding: 8,
                 borderRadius: 8,
+                flexDirection: "column",
+                justifyContent: "space-between",
+                shadowColor: theme === "light" ? "#000" : "#fff",
+                shadowOffset: {
+                    width: 0,
+                    height: 1,
+                },
+                shadowOpacity: 0.20,
+                shadowRadius: 1.41,
+
+                elevation: 2,
                 ...style,
             }}
         >
@@ -43,26 +56,33 @@ const CategoryCard = ({
                 source={{
                     uri:
                         imageUrl === ""
-                            ? "https://anhanime.me/wp-content/uploads/2024/03/anh-nezuko_19.jpg"
+                            ? "../../assets/images/unknownImage.jpg"
                             : imageUrl,
                 }}
                 style={{
                     width: "100%",
                     height: 100,
-                    objectFit: "contain",
+                    borderTopLeftRadius: 8,
+                    borderTopRightRadius: 8,
+                    objectFit: "cover",
                     ...imageStyle,
                 }}
             />
             <Row
                 style={{
+                    marginBottom: 8,
                     marginTop: 8,
+                    paddingHorizontal: 8,
                 }}
             >
                 <ThemeText
-                    text={title}
+                    ellipsizeMode="tail"
+                    numOfLines={6}
+                    text={title.toLocaleUpperCase()}
                     type="small"
                     style={{
                         ...titleStyle,
+                        textAlign: "center",
                     }}
                 />
             </Row>

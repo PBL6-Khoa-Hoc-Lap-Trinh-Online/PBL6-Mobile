@@ -10,7 +10,7 @@ import { router } from "expo-router";
 import { Back } from "iconsax-react-native";
 import React from "react";
 import { View } from "react-native";
-import { ALERT_TYPE, Toast } from "react-native-alert-notification";
+import Toast from "react-native-toast-message";
 
 const ChangePassword = () => {
 
@@ -25,16 +25,16 @@ const ChangePassword = () => {
         if (currentPassword === "" || newPassword === "" || confirmPassword === "") {
             // show toast
             Toast.show({
-                title: "Please fill all fields",
-                type: ALERT_TYPE.DANGER,
+                text1: "Please fill all fields",
+                type: 'error',
             })
             setIsLoading(false);
         }
         if (newPassword !== confirmPassword) {
             // show toast
             Toast.show({
-                title: "New password and confirm password does not match",
-                type: ALERT_TYPE.DANGER,
+                text1: "New password and confirm password does not match",
+                type: 'error',
             })
             setIsLoading(false);
         }
@@ -42,14 +42,14 @@ const ChangePassword = () => {
         try {
             await changePassword(currentPassword, newPassword, confirmPassword);
             Toast.show({
-                title: "Change password successfully",
-                type: ALERT_TYPE.SUCCESS,
+                text1: "Change password successfully",
+                type: 'success',
             })
             router.back();
         } catch (error: any) {
             Toast.show({
-                title: error.messages[0],
-                type: ALERT_TYPE.DANGER,
+                text1: error.messages[0],
+                type: 'error',
             })
             setIsLoading(false);
         }

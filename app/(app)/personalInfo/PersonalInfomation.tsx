@@ -14,8 +14,8 @@ import { router } from "expo-router";
 import { ArrowRotateLeft, Back, Calendar2 } from "iconsax-react-native";
 import React, { useEffect } from "react";
 import { TouchableOpacity, View } from "react-native";
-import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 import { ScrollView } from "react-native-gesture-handler";
+import Toast from "react-native-toast-message";
 
 const PersonalInfomation = () => {
     const { refreshUser } = useAuth();
@@ -86,20 +86,16 @@ const PersonalInfomation = () => {
             refreshUser();
             router.back();
             Toast.show({
-                type: ALERT_TYPE.SUCCESS,
-                title: "Success",
-                textBody: "Update profile successfully",
-                titleStyle: { color: "black" },
-                autoClose: true,
+                text1: "Success",
+                text2: "Update profile successfully",
+                type: "success",
             });
             setIsLoading(false);
         } catch (error: any) {
             Toast.show({
-                type: ALERT_TYPE.WARNING,
-                title: "Warning",
-                textBody: error.messages.join("\n"),
-                titleStyle: { color: "black" },
-                autoClose: true,
+                text1: "Warning",
+                text2: error.messages.join("\n"),
+                type: "error",
             });
             setIsLoading(false);
         }

@@ -1,4 +1,3 @@
-import { addProductToCartApi, getCartApi } from "@/apis/cart";
 import { getProductByIdApi } from "@/apis/product";
 import Badge from "@/components/badge/Badge";
 import Button from "@/components/button/Button";
@@ -11,18 +10,20 @@ import ThemeView from "@/components/themeView/ThemeView";
 import { CartContext } from "@/context/cart";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { ProductType } from "@/type/productType";
+import { convertPrice } from "@/utils/convertPrice";
 import { router, useLocalSearchParams } from "expo-router";
-import { Back, ShoppingCart, WalletMoney } from "iconsax-react-native";
+import { Back, Notification, ShoppingCart, WalletMoney } from "iconsax-react-native";
 import React, { useContext, useEffect, useRef } from "react";
-import { Image, View } from "react-native";
-import { ALERT_TYPE, Toast } from "react-native-alert-notification";
+import { Dimensions, Image, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { ImageViewer, ImageWrapper } from "react-native-reanimated-viewer";
+import Toast from "react-native-toast-message";
 
 const Product = () => {
     const { productId } = useLocalSearchParams<{
         productId: string;
     }>();
+    let screenWidth = Dimensions.get('screen').width * 3 / 4;
 
     const { cartItems, addProductToCart } = useContext(CartContext);
 
@@ -58,7 +59,7 @@ const Product = () => {
             <Row
                 style={{
                     justifyContent: "space-between",
-                    backgroundColor: useThemeColor({}, "itemBackground"),
+                    backgroundColor: useThemeColor({}, "background"),
                     paddingVertical: 8,
                     paddingHorizontal: 32,
                     marginHorizontal: -16,
@@ -76,6 +77,17 @@ const Product = () => {
                     value={search}
                     onChangeText={setSearch}
                     placeholder="Search"
+                />
+
+                <Button
+                    variant="circle"
+                    icon={
+                        <Notification
+                            size={20}
+                            color={useThemeColor({}, "text")}
+                        />
+                    }
+                    onPress={() => { }}
                 />
 
                 <Badge count={cartItems.length}>
@@ -98,6 +110,7 @@ const Product = () => {
             <ScrollView
                 style={{
                     marginBottom: 70,
+                    width: "100%",
                 }}
             >
                 <ImageViewer
@@ -109,7 +122,7 @@ const Product = () => {
                         })) ?? []
                     }
                 />
-                <View style={{ flexDirection: "row", height: 300 }}>
+                <View style={{ flexDirection: "row", height: screenWidth, width: '100%' }}>
                     <ImageWrapper
                         key={product?.product_images?.[0] ?? ""}
                         viewerRef={imageRef}
@@ -118,7 +131,6 @@ const Product = () => {
                             uri: product?.product_images?.[0] ?? "",
                         }}
                         style={{
-                            width: "80%",
                         }}
                     >
                         <Image
@@ -128,11 +140,12 @@ const Product = () => {
                             style={{
                                 width: "100%",
                                 aspectRatio: 1,
-                                height: 300,
+                                height: screenWidth,
                             }}
                         />
                     </ImageWrapper>
-                    <ScrollView style={{ height: "100%", width: '25%' }}>
+                    <Space size={{ height: 0, width: 4 }} />
+                    <ScrollView style={{ height: "100%" }}>
                         {product?.product_images?.map((el, index) => (
                             <ImageWrapper
                                 key={el}
@@ -142,26 +155,31 @@ const Product = () => {
                                     uri: el,
                                 }}
                             >
-                                <Image
-                                    source={{
-                                        uri: el,
-                                    }}
-                                    style={{
-                                        width: "100%",
-                                        aspectRatio: 1,
-                                    }}
-                                />
+                                
+                                    <Image
+                                        source={{
+                                            uri: el,
+                                        }}
+                                        style={{
+                                            width: "100%",
+                                            aspectRatio: 1,
+                                            marginBottom: 4,
+
+                                        }}
+                                    />
                             </ImageWrapper>
                         ))}
                     </ScrollView>
+                    <Space size={{ height: 0, width: 4 }} />
                 </View>
 
                 <ThemeView
                     style={{
-                        backgroundColor: useThemeColor({}, "itemBackground"),
                     }}
                 >
-                    <ThemeText type="title" text={product?.product_name} />
+                    <ThemeText type="title" text={product?.product_name}
+                        numOfLines={10}
+                    />
                     <Space size={{ height: 16, width: 0 }} />
                     <ThemeText
                         type="link"
@@ -169,10 +187,10 @@ const Product = () => {
                     />
                     <ThemeText
                         type="large"
-                        text={`${product?.product_price} vnđ`}
+                        text={`${convertPrice(Number.parseFloat(product?.product_price ?? "0"))} vnđ`}
                         style={{
                             color: useThemeColor({}, "primary"),
-                            fontSize: 24,
+                            fontSize: 32,
                         }}
                     />
                     <Space size={{ height: 8, width: 0 }} />
@@ -183,6 +201,7 @@ const Product = () => {
                             color: useThemeColor({}, "icon"),
                             fontSize: 12,
                         }}
+                        numOfLines={10}
                     />
                     <Space size={{ height: 8, width: 0 }} />
                     <Row justifyContent="flex-start">
@@ -193,7 +212,7 @@ const Product = () => {
                         <Space size={{ width: 8, height: 0 }} />
                         <ThemeText
                             type="medium"
-                            text={`Sold: ${product?.product_sold}`}
+                            text={`Sold: ${product?.product_sold} products`}
                             style={{
                                 fontWeight: "bold",
                             }}
@@ -203,7 +222,7 @@ const Product = () => {
                 <Space size={{ height: 16, width: 0 }} />
                 <ThemeView
                     style={{
-                        backgroundColor: useThemeColor({}, "itemBackground"),
+                        backgroundColor: useThemeColor({}, "background"),
                         padding: 16,
                     }}
                 >
@@ -217,7 +236,7 @@ const Product = () => {
                 <Space size={{ height: 16, width: 0 }} />
                 <ThemeView
                     style={{
-                        backgroundColor: useThemeColor({}, "itemBackground"),
+                        backgroundColor: useThemeColor({}, "background"),
                         padding: 16,
                     }}
                 >
@@ -315,17 +334,7 @@ const Product = () => {
                     />
                 </ThemeView>
                 <Space size={{ height: 16, width: 0 }} />
-                <ThemeView
-                    style={{
-                        backgroundColor: useThemeColor({}, "itemBackground"),
-                        padding: 16,
-                    }}
-                >
-                    <Row justifyContent="space-between">
-                        <ThemeText type="title" text="Q&A (1)" />
-                        <ThemeText type="link" text="View more" />
-                    </Row>
-                </ThemeView>
+
             </ScrollView>
             <Row
                 style={{
@@ -356,18 +365,16 @@ const Product = () => {
                                     );
 
                                     Toast.show({
-                                        title: "Success",
-                                        textBody: "Product added to cart",
-                                        type: ALERT_TYPE.SUCCESS,
-                                        autoClose: true,
+                                        text1: "Success",
+                                        text2: "Product added to cart",
+                                        type: 'success',
                                     });
                                 }
                             } catch (error: any) {
                                 Toast.show({
-                                    title: "Error",
-                                    textBody: error.messages[0],
-                                    type: ALERT_TYPE.DANGER,
-                                    autoClose: true,
+                                    text1: "Error",
+                                    text2: error.messages[0],
+                                    type: 'error',
                                 });
                             }
                         }}
@@ -387,7 +394,7 @@ const Product = () => {
                     <Button
                         color="primary"
                         text="Buy now"
-                        onPress={() => {}}
+                        onPress={() => { }}
                         style={{
                             paddingVertical: 12,
                             flex: 1,

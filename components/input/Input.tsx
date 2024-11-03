@@ -80,6 +80,7 @@ const Input = ({
                         cursorColor={useThemeColor({}, "text")}
                         style={{
                             flex: 1,
+                            color: useThemeColor({}, "text"),
                         }}
                     />
                     {icon && iconPosition === "right" && (

@@ -11,6 +11,7 @@ import Row from "@/components/row/Row";
 import Space from "@/components/space/Space";
 import ThemeText from "@/components/themeText/ThemeText";
 import ThemeView from "@/components/themeView/ThemeView";
+import { Notification } from "iconsax-react-native";
 import { CartContext } from "@/context/cart";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { Brand } from "@/type/brandType";
@@ -27,14 +28,16 @@ import React, {
     useMemo,
     useRef
 } from "react";
-import { FlatList, View } from "react-native";
-import { ALERT_TYPE, Toast } from "react-native-alert-notification";
+import { Dimensions, FlatList, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import Toast from "react-native-toast-message";
 
 const Products = () => {
     const { categoryId } = useLocalSearchParams<{
         categoryId: string;
     }>();
+    const screenWidth = Dimensions.get('screen').width
+    let width = Dimensions.get('screen').width / 2 - 32
     const { cartItems } = useContext(CartContext);
 
     const primaryColor = useThemeColor({}, "primary");
@@ -43,11 +46,11 @@ const Products = () => {
     const [activeIndex, setActiveIndex] = React.useState<number>(0);
     const [categories, setCategories] = React.useState<CategoryType[]>([]);
     const [products, setProducts] = React.useState<ProductType[]>([]);
-    const [breadCrumbs, setBreadCrumbs] = React.useState<string[]>([]);
+    const [breadCrumbs, setBreadCrumbs] = React.useState<string[]>(['']);
 
     const [minimumPrice, setMinimumPrice] = React.useState<number | null>(null);
     const [maximumPrice, setMaximumPrice] = React.useState<number | null>(null);
-    const [selectedRangePrice, setSelectedRangePrice] = React.useState<'-100'|'100-300'|'300-500'|'-500' | null>(null);
+    const [selectedRangePrice, setSelectedRangePrice] = React.useState<'-100' | '100-300' | '300-500' | '-500' | null>(null);
 
     const [selectedBrand, setSelectedBrand] = React.useState<Brand[]>([]);
     const [brands, setBrands] = React.useState<Brand[]>([]);
@@ -71,10 +74,9 @@ const Products = () => {
                 setCategories(category.data?.children ?? []);
             } catch (error: any) {
                 Toast.show({
-                    title: "Error",
-                    textBody: error.messages[0],
-                    type: ALERT_TYPE.DANGER,
-                    autoClose: true,
+                    text1: "Error",
+                    text2: error.messages[0],
+                    type: 'error',
                 });
             }
         })();
@@ -100,7 +102,7 @@ const Products = () => {
             const category = await getCategoryByIdApi(categoryId);
             let temp = category.data;
             while (temp) {
-                breadCrumbs.unshift(temp.category_name);
+                breadCrumbs.unshift(temp.category_name.toLocaleUpperCase());
                 temp = (await getCategoryByIdApi(temp.category_parent_id + ""))
                     .data;
             }
@@ -136,7 +138,7 @@ const Products = () => {
             <Row
                 style={{
                     justifyContent: "space-between",
-                    backgroundColor: useThemeColor({}, "itemBackground"),
+                    backgroundColor: useThemeColor({}, "background"),
                     paddingVertical: 8,
                     paddingHorizontal: 16,
                     marginTop: -16,
@@ -151,8 +153,19 @@ const Products = () => {
                         router.back();
                     }}
                 />
-                <BreadCrumb breadCrumbs={breadCrumbs} />
-
+                <BreadCrumb breadCrumbs={breadCrumbs} style={{
+                    flex: 1,
+                }} />
+                <Button
+                    variant="circle"
+                    icon={
+                        <Notification
+                            size={20}
+                            color={useThemeColor({}, "text")}
+                        />
+                    }
+                    onPress={() => { }}
+                />
                 <Badge count={cartItems.length}>
                     <Button
                         variant="circle"
@@ -185,12 +198,17 @@ const Products = () => {
                             setActiveIndex(index);
                         }}
                         style={{
-                            width: 80,
-                            borderRadius: 0,
+                            width: 100,
+                            borderRadius: 8,
+                            margin: 8,
+                            borderWidth: activeIndex === index ? 0.5 : 0,
+                            borderColor:
+                                activeIndex === index
+                                    ? primaryColor
+                                    : textColor,
+
                         }}
                         imageStyle={{
-                            borderWidth: activeIndex === index ? 1 : 0,
-                            borderColor: primaryColor,
                             borderRadius: 8,
                             height: 60,
                         }}
@@ -249,12 +267,14 @@ const Products = () => {
                                     item.product_id) as Href
                             );
                         }}
+                        style={{
+                            width: width, margin: 8, flex: 0
+                        }}
                     />
                 )}
                 keyExtractor={(item) => item.product_id.toString()}
                 numColumns={2}
-                contentContainerStyle={{ gap: 8 }}
-                columnWrapperStyle={{ gap: 8 }}
+                columnWrapperStyle={{ justifyContent: 'space-between', alignItems: 'flex-start' }}
                 style={{
                     flex: 0,
                     height: "50%",
@@ -267,6 +287,9 @@ const Products = () => {
                 snapPoints={snapPoints}
                 enablePanDownToClose={true}
                 index={-1}
+                backgroundStyle={{
+                    backgroundColor: useThemeColor({}, "border"),
+                }}
             >
                 <BottomSheetScrollView
                     style={{
@@ -280,7 +303,7 @@ const Products = () => {
                             padding: 16,
                             backgroundColor: useThemeColor(
                                 {},
-                                "itemBackground"
+                                "background"
                             ),
                         }}
                         justifyContent="flex-start"
@@ -288,188 +311,212 @@ const Products = () => {
                         <ThemeText text="Search Filter" type="title" />
                     </Row>
                     <Space size={{ height: 16, width: 0 }} />
-                <ThemeView
-                    style={{
-                        backgroundColor: useThemeColor({}, "itemBackground"),
-                        padding: 16,
-                    }}
-                >
-                    <ThemeText type="medium" text="Range Price" style={{
-                        fontWeight: 'bold',
-                    }}/>
-                    <Space size={{ height: 16, width: 0 }} />
-                    <Row>
-                        <Input
-                            placeholder="Min"
-                            value={minimumPrice !== null ? minimumPrice.toString() : ''}
-                            onChangeText={(text) => {
-                                setMinimumPrice(parseInt(text));
-                            }}
-                            iconPosition="right"
-                            icon={<ThemeText text="VNĐ" type="medium" />}
-                            style={{
-                                flex: 1
-                            }}
-                        />
-                        <Space size={{ width: 16, height: 0 }} />
-                        <Input
-                            
-                            placeholder="Max"
-                            value={maximumPrice !== null ? maximumPrice.toString() : ''}
-                            onChangeText={(text) => {
-                                setMaximumPrice(parseInt(text));
-                            }}
-                            iconPosition="right"
-                            icon={<ThemeText text="VNĐ" type="medium" />}
-                            style={{
-                                flex: 1
-                            }}
-                        />
-                    </Row>
-                    <Space size={{ height: 16, width: 0 }} />
-                    <Row style={{
-                    }}>
-                        <View style={{
-                            flex: 1
-                        }}>
-                            <Button variant="outline" onPress={() => {
-                                setSelectedRangePrice('-100');
-                            }} text="0 đ - 100.000 đ" 
-                                key={'-100'}
-                                color={
-                                    selectedRangePrice === '-100' ? 
-                                    'primary' :
-                                    'text'
-                                }
-                                style={{
-                                    flex: 1,
-                                }}
-                            />
-                        </View>
-                        <Space size={{ width: 16, height: 0 }} />
-                        <View style={{
-                            flex: 1
-                        }}>
-                            <Button variant="outline" onPress={() => {
-                                setSelectedRangePrice('100-300');
-                            }} text="100.000 đ - 300.000 đ" 
-                                key={'100-300'}
-                                color={
-                                    selectedRangePrice === '100-300' ? 
-                                    'primary' :
-                                    'text'
-                                }
-                                style={{
-                                    flex: 1,
-                                }}
-                            />
-                        </View>
-                    </Row>
-                    <Space size={{ height: 16, width: 0 }} />
-                    <Row style={{
-                    }}>
-                        <View style={{
-                            flex: 1
-                        }}>
-                            <Button variant="outline" onPress={() => {
-                                setSelectedRangePrice('300-500');
-                            }} text="300.000 đ - 500.000 đ" 
-                                key={'300-500'}
-                                color={
-                                    selectedRangePrice === '300-500' ? 
-                                    'primary' :
-                                    'text'
-                                }
-                                style={{
-                                    flex: 1,
-                                }}
-                            />
-                        </View>
-                        <Space size={{ width: 16, height: 0 }} />
-                        <View style={{
-                            flex: 1
-                        }}>
-                            <Button variant="outline" onPress={() => {
-                                setSelectedRangePrice('-500');
-                            }} text="Above 500.000 đ" 
-                                key={'-500'}
-                                color={
-                                    selectedRangePrice === '-500' ? 
-                                    'primary' :
-                                    'text'
-                                }
-                                style={{
-                                    flex: 1,
-                                }}
-                            />
-                        </View>
-                    </Row>
-                    
-                    
-                </ThemeView>
-                <Space size={{ height: 16, width: 0 }} />
-                <ThemeView style={{
-                    backgroundColor: useThemeColor({}, 'itemBackground'),
-                    padding: 16,
-                }}>
-                    <Row justifyContent="space-between">
-                        <ThemeText type="medium" text="Brand" style={{
+                    <ThemeView
+                        style={{
+                            backgroundColor: useThemeColor({}, "background"),
+                            padding: 16,
+                        }}
+                    >
+                        <ThemeText type="medium" text="Range Price" style={{
                             fontWeight: 'bold',
-                        }}/>
-                        {
-                            moreBrands ? (
-                                <Button
-                                    variant="link"
-                                    text="Show less"
-                                    onPress={() => {
-                                        setMoreBrands(false);
-                                    }}
-                                />
-                            ) : (
-                                <Button
-                                    variant="link"
-                                    text="Show more"
-                                    onPress={() => {
-                                        setMoreBrands(true);
-                                    }}
-                                />
-                            )
-                        }
-                    </Row>
-                    <Space size={{ height: 16, width: 0 }} />
-                    <View style={{
-                        flexDirection: 'row',
-                        flexWrap: 'wrap',
-                    }}>
-                        {brands.slice(0, moreBrands ? -1 : 6).map((brand) => (
-                            <Button
-                                variant="outline"
-                                text={brand.brand_name}
-                                key={brand.brand_id}
-                                color={
-                                    selectedBrand.includes(brand) ? 
-                                    'primary' :
-                                    'text'
-                                }
-                                onPress={() => {
-                                    if (selectedBrand.includes(brand)) {
-                                        setSelectedBrand(selectedBrand.filter((item) => item !== brand));
-                                    } else {
-                                        setSelectedBrand([...selectedBrand, brand]);
-                                    }
+                        }} />
+                        <Space size={{ height: 16, width: 0 }} />
+                        <Row>
+                            <Input
+                                placeholder="Min"
+                                value={minimumPrice !== null ? minimumPrice.toString() : ''}
+                                onChangeText={(text) => {
+                                    setMinimumPrice(parseInt(text));
                                 }}
+                                iconPosition="right"
+                                icon={<ThemeText text="VNĐ" type="medium" />}
                                 style={{
-                                    marginBottom: 8,
-                                    marginRight: 8,
+                                    flex: 1
                                 }}
                             />
-                        ))}
-                    </View>
-                </ThemeView>
-                <Space size={{ height: 16, width: 0 }} />
+                            <Space size={{ width: 16, height: 0 }} />
+                            <Input
+
+                                placeholder="Max"
+                                value={maximumPrice !== null ? maximumPrice.toString() : ''}
+                                onChangeText={(text) => {
+                                    setMaximumPrice(parseInt(text));
+                                }}
+                                iconPosition="right"
+                                icon={<ThemeText text="VNĐ" type="medium" />}
+                                style={{
+                                    flex: 1
+                                }}
+                            />
+                        </Row>
+                        <Space size={{ height: 16, width: 0 }} />
+                        <Row style={{
+                        }}>
+                            <View style={{
+                                flex: 1
+                            }}>
+                                <Button variant="outline" onPress={() => {
+                                    setSelectedRangePrice('-100');
+                                }} text="0 đ - 100.000 đ"
+                                    key={'-100'}
+                                    color={
+                                        selectedRangePrice === '300-500' ?
+                                            'primary' :
+                                            'border'
+                                    }
+                                    textStyles={{
+                                        color: useThemeColor({}, 'text')
+                                    }}
+                                    style={{
+                                        flex: 1,
+                                    }}
+                                />
+                            </View>
+                            <Space size={{ width: 16, height: 0 }} />
+                            <View style={{
+                                flex: 1
+                            }}>
+                                <Button variant="outline" onPress={() => {
+                                    setSelectedRangePrice('100-300');
+                                }} text="100.000 đ - 300.000 đ"
+                                    key={'100-300'}
+                                    color={
+                                        selectedRangePrice === '300-500' ?
+                                            'primary' :
+                                            'border'
+                                    }
+                                    textStyles={{
+                                        color: useThemeColor({}, 'text')
+                                    }}
+                                    style={{
+                                        flex: 1,
+                                    }}
+                                />
+                            </View>
+                        </Row>
+                        <Space size={{ height: 16, width: 0 }} />
+                        <Row style={{
+                        }}>
+                            <View style={{
+                                flex: 1
+                            }}>
+                                <Button variant="outline" onPress={() => {
+                                    setSelectedRangePrice('300-500');
+                                }} text="300.000 đ - 500.000 đ"
+                                    key={'300-500'}
+                                    color={
+                                        selectedRangePrice === '300-500' ?
+                                            'primary' :
+                                            'border'
+                                    }
+                                    textStyles={{
+                                        color: useThemeColor({}, 'text')
+                                    }}
+                                    style={{
+                                        flex: 1,
+                                    }}
+                                />
+                            </View>
+                            <Space size={{ width: 16, height: 0 }} />
+                            <View style={{
+                                flex: 1
+                            }}>
+                                <Button variant="outline" onPress={() => {
+                                    setSelectedRangePrice('-500');
+                                }} text="Above 500.000 đ"
+                                    key={'-500'}
+                                    color={
+                                        selectedRangePrice === '300-500' ?
+                                            'primary' :
+                                            'border'
+                                    }
+                                    textStyles={{
+                                        color: useThemeColor({}, 'text')
+                                    }}
+                                    style={{
+                                        flex: 1,
+                                    }}
+                                />
+                            </View>
+                        </Row>
+
+
+                    </ThemeView>
+                    <Space size={{ height: 16, width: 0 }} />
+                    <ThemeView style={{
+                        backgroundColor: useThemeColor({}, 'background'),
+                        padding: 16,
+                    }}>
+                        <Row justifyContent="space-between">
+                            <ThemeText type="medium" text="Brand" style={{
+                                fontWeight: 'bold',
+                            }} />
+                            {
+                                moreBrands ? (
+                                    <Button
+                                        variant="link"
+                                        text="Show less"
+                                        onPress={() => {
+                                            setMoreBrands(false);
+                                        }}
+                                    />
+                                ) : (
+                                    <Button
+                                        variant="link"
+                                        text="Show more"
+                                        onPress={() => {
+                                            setMoreBrands(true);
+                                        }}
+                                    />
+                                )
+                            }
+                        </Row>
+                        <Space size={{ height: 16, width: 0 }} />
+                        <ScrollView
+                            style={{
+                                maxHeight: screenWidth,
+
+                            }}>
+                            <View style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                flexWrap: 'wrap',
+                            }}>
+                                {brands.slice(0, moreBrands ? -1 : 6).map((brand) => (
+                                    <Button
+                                        variant="outline"
+                                        text={brand.brand_name}
+                                        key={brand.brand_id}
+                                        color={
+                                            selectedBrand.includes(brand) ?
+                                                'primary' :
+                                                'border'
+                                        }
+                                        textStyles={{
+                                            color: selectedBrand.includes(brand) ?
+                                            primaryColor :
+                                            textColor
+                                        }}
+                                        onPress={() => {
+                                            if (selectedBrand.includes(brand)) {
+                                                setSelectedBrand(selectedBrand.filter((item) => item !== brand));
+                                            } else {
+                                                setSelectedBrand([...selectedBrand, brand]);
+                                            }
+                                        }}
+                                        style={{
+                                            marginBottom: 8,
+                                            marginRight: 8,
+                                        }}
+                                    />
+                                ))}
+                            </View>
+                        </ScrollView>
+                    </ThemeView>
+                    <Space size={{ height: 16, width: 0 }} />
                     <Row style={{
                         padding: 16,
-                        backgroundColor: useThemeColor({}, 'itemBackground'),
+                        backgroundColor: useThemeColor({}, 'background'),
                     }}>
                         <View style={{
                             width: '50%',
@@ -478,7 +525,7 @@ const Products = () => {
                                 variant="fill"
                                 text="Reset Filter"
                                 textStyles={{
-                                    color: useThemeColor({}, 'text')
+                                    color: useThemeColor({}, 'text'),
                                 }}
                                 onPress={() => {
                                     setSelectedBrand([]);
@@ -488,7 +535,7 @@ const Products = () => {
                                 }}
                                 style={{
                                     width: '100%',
-                                    backgroundColor: useThemeColor({}, 'background')
+                                    backgroundColor: useThemeColor({}, 'itemBackground')
                                 }}
                             />
                         </View>
@@ -499,7 +546,7 @@ const Products = () => {
                             <Button
                                 text="Apply"
                                 color="primary"
-                                onPress={() => {}}
+                                onPress={() => { }}
                                 style={{
                                     width: '100%',
                                 }}

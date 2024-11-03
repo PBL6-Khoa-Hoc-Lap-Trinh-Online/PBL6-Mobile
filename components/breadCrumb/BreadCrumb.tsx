@@ -22,7 +22,7 @@ const BreadCrumb = ({ breadCrumbs, style }: BreadCrumbProps) => {
                 ...style,
             }}
         >
-            <ThemeText text={breadCrumbs.join(" / ")} type="medium" />
+            <ThemeText text={breadCrumbs.join(" / ")} type="small" ellipsizeMode="head"/>
         </Row>
     );
 };

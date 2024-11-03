@@ -28,7 +28,7 @@ const _layout = () => {
                             justifyContent: "space-between",
                             backgroundColor: useThemeColor(
                                 {},
-                                "itemBackground"
+                                "background"
                             ),
                             paddingVertical: 8,
                             paddingHorizontal: 16,

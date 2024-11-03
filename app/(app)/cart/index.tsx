@@ -9,12 +9,14 @@ import ThemeView from "@/components/themeView/ThemeView";
 import { CartContext } from "@/context/cart";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { CartItem } from "@/type/cartType";
+import { convertPrice } from "@/utils/convertPrice";
 import { Href, router } from "expo-router";
 import { Back } from "iconsax-react-native";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { View } from "react-native";
-import { ALERT_TYPE, Dialog, Toast } from "react-native-alert-notification";
 import { FlatList } from "react-native-gesture-handler";
+import Toast from "react-native-toast-message";
+import ConfirmationModal from "react-native-confirmation";
 
 const Card = () => {
     const { cartItems, updateProductInCart, removeProductFromCart } =
@@ -22,6 +24,7 @@ const Card = () => {
     const [checkedList, setCheckedList] = React.useState<number[]>([]);
 
     const [isCheckedAll, setIsCheckedAll] = React.useState(true);
+    const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
         const checkedList: number[] = [];
@@ -51,7 +54,7 @@ const Card = () => {
             <Row
                 style={{
                     justifyContent: "space-between",
-                    backgroundColor: useThemeColor({}, "itemBackground"),
+                    backgroundColor: useThemeColor({}, "background"),
                     paddingVertical: 8,
                     paddingHorizontal: 16,
                 }}
@@ -71,40 +74,7 @@ const Card = () => {
                     color="danger"
                     text="Delete"
                     onPress={() => {
-                        Dialog.show({
-                            type: ALERT_TYPE.DANGER,
-                            closeOnOverlayTap: true,
-                            title: "Delete",
-                            textBody: "Are you sure you want to delete?",
-                            button: "Delete",
-                            onPressButton: async () => {
-                                try {
-                                    const cartItemDelete = cartItems.filter(
-                                        (item) => {
-                                            return checkedList.includes(
-                                                item.product_id
-                                            );
-                                        }
-                                    );
-                                    await removeProductFromCart(
-                                        cartItemDelete.map(
-                                            (item) => item.cart_id
-                                        )   
-                                    );
-
-                                    Dialog.hide()
-                                    
-                                } catch (error: any) {
-                                    console.log(error);
-                                    Toast.show({
-                                        title: "Error",
-                                        textBody: error.messages[0],
-                                        type: ALERT_TYPE.DANGER,
-                                        autoClose: true,
-                                    });
-                                }
-                            },
-                        });
+                        setIsVisible(true);
                     }}
                 />
             </Row>
@@ -128,10 +98,8 @@ const Card = () => {
                                     );
                                 } catch (error: any) {
                                     Toast.show({
-                                        title: "Error",
-                                        textBody: error.messages,
-                                        type: ALERT_TYPE.DANGER,
-                                        autoClose: true,
+                                        text1: error.messages,
+                                        type: 'error'
                                     });
                                 }
                             }}
@@ -158,7 +126,7 @@ const Card = () => {
                         />
                     )}
                     contentContainerStyle={{
-                        gap: 8,
+                        gap: 16,
                     }}
                 />
 
@@ -195,20 +163,32 @@ const Card = () => {
                             }}
                         >
                             <ThemeText text="Total" type="medium" />
-                            <ThemeText
-                                text={`${caculateTotal()} vnd`}
-                                type="large"
-                                style={{
-                                    fontWeight: "bold",
-                                    fontSize: 16,
-                                }}
-                            />
+                            <Row>
+                                <ThemeText
+                                    text={`${convertPrice(caculateTotal())}`}
+                                    type="large"
+                                    style={{
+                                        fontWeight: "bold",
+                                        fontSize: 20,
+                                        color: useThemeColor({}, "primary"),
+                                    }}
+                                />
+                                <ThemeText
+                                    text=" vnd"
+                                    type="small"
+                                    style={{
+                                        fontWeight: "bold",
+                                        fontSize: 14,
+                                        color: useThemeColor({}, "primary"),
+                                    }}
+                                />
+                            </Row>
                         </View>
                         <Space size={{ width: 16, height: 0 }} />
                         <Button
                             color="primary"
                             text="Checkout"
-                            onPress={() => {}}
+                            onPress={() => { }}
                             style={{
                                 paddingVertical: 12,
                                 paddingHorizontal: 16,
@@ -217,6 +197,36 @@ const Card = () => {
                     </Row>
                 </Row>
             </ThemeView>
+            <ConfirmationModal
+                colorScheme={"system"}
+                isVisible={isVisible}
+                setIsVisible={setIsVisible}
+                message="Are you sure you want to delete?"
+                onConfirm={async () => {
+                    console.log("Confirm");
+                    try {
+                        const cartItemDelete = cartItems.filter(
+                            (item) => {
+                                return checkedList.includes(
+                                    item.product_id
+                                );
+                            }
+                        );
+                        await removeProductFromCart(
+                            cartItemDelete.map(
+                                (item) => item.cart_id
+                            )
+                        );
+                        setIsVisible(false);
+                    } catch (error: any) {
+                        console.log(error);
+                        Toast.show({
+                            text1: error.messages[0],
+                            type: 'error'
+                        });
+                    }
+                }}
+            />
         </View>
     );
 };
