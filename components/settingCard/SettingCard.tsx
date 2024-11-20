@@ -1,4 +1,4 @@
-import { View, Text, ViewStyle } from "react-native";
+import { View, Text, ViewStyle, Dimensions } from "react-native";
 import React from "react";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -10,34 +10,41 @@ interface SettingCardProps {
     style?: ViewStyle;
 }
 const SettingCard = ({ icon, title, onPress, style }: SettingCardProps) => {
+    let screenWidth = Dimensions.get('screen').width - 32;
     return (
-        <TouchableOpacity
-            onPress={onPress}
+        <View
             style={{
                 backgroundColor: useThemeColor({}, "itemBackground"),
                 padding: 16,
-                borderRadius: 8,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "flex-start",
+
                 marginBottom: 8,
+                minHeight: screenWidth / 3,
                 ...style,
             }}
         >
-            <View
+            <TouchableOpacity
+                onPress={onPress}
                 style={{
-                    marginBottom: 8,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "flex-start",
                 }}
             >
-                {icon}
-            </View>
-            <ThemeText
-                type="small"
-                style={{ textAlign: "center", fontWeight: "500" }}
-                text={title}
-            />
-        </TouchableOpacity>
+                <View
+                    style={{
+                        marginBottom: 8,
+                    }}
+                >
+                    {icon}
+                </View>
+                <ThemeText
+                    type="small"
+                    style={{ textAlign: "center", fontWeight: "500" }}
+                    text={title}
+                />
+            </TouchableOpacity>
+        </View>
     );
 };
 

@@ -2,6 +2,7 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import {
     DateTimePickerAndroid,
     DateTimePickerEvent,
+    RCTDateTimePickerNative
 } from "@react-native-community/datetimepicker";
 import React, { ReactNode } from "react";
 import { Text, TextInput, TouchableOpacity, View, ViewStyle } from "react-native";
@@ -111,7 +112,7 @@ const Input = ({
 
     const showDatepicker = () => {
         DateTimePickerAndroid.open({
-            value: new Date(value),
+            value: value ? new Date(value) : new Date(),
             onChange,
             mode: "date",
             is24Hour: true,

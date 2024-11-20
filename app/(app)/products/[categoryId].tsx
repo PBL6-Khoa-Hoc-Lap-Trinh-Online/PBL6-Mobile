@@ -198,6 +198,7 @@ const Products = () => {
                             setActiveIndex(index);
                         }}
                         style={{
+                            zIndex: 100,
                             width: 100,
                             borderRadius: 8,
                             margin: 8,
@@ -224,23 +225,10 @@ const Products = () => {
             <Space size={{ height: 8, width: 0 }} />
             <FlatList
                 ListHeaderComponent={() => (
-                    <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        style={{
-                            flexGrow: 0,
-                            borderRadius: 8,
-                            padding: 8,
-                            backgroundColor: useThemeColor(
-                                {},
-                                "itemBackground"
-                            ),
-                        }}
-                    >
+                    <Row justifyContent="flex-end">
                         <Button
                             variant="link"
                             color="primary"
-                            text="Filter"
                             onPress={() => {
                                 handleOpenBottomSheet();
                             }}
@@ -251,7 +239,7 @@ const Products = () => {
                                 />
                             }
                         />
-                    </ScrollView>
+                    </Row>
                 )}
                 data={products}
                 renderItem={({ item }) => (
@@ -259,8 +247,14 @@ const Products = () => {
                         key={item.product_id}
                         imageUrls={item.product_images ?? []}
                         title={item.product_name}
-                        price={item.product_price}
-                        sold={item.product_sold}
+                        price={
+                            item.parent_category_name === "Thuốc không kê đơn"
+                                ? item.product_price
+                                : undefined
+                        }
+                        sold={
+                            item.parent_category_name === "Thuốc không kê đơn" ? item.product_sold : undefined
+                        }
                         onPress={() => {
                             router.navigate(
                                 ("/(app)/products/product/" +
@@ -288,7 +282,8 @@ const Products = () => {
                 enablePanDownToClose={true}
                 index={-1}
                 backgroundStyle={{
-                    backgroundColor: useThemeColor({}, "border"),
+                    borderColor: useThemeColor({}, "border"),
+                    borderWidth: 1,
                 }}
             >
                 <BottomSheetScrollView
@@ -494,8 +489,8 @@ const Products = () => {
                                         }
                                         textStyles={{
                                             color: selectedBrand.includes(brand) ?
-                                            primaryColor :
-                                            textColor
+                                                primaryColor :
+                                                textColor
                                         }}
                                         onPress={() => {
                                             if (selectedBrand.includes(brand)) {

@@ -106,7 +106,7 @@ const PersonalInfomation = () => {
             <Row
                 style={{
                     justifyContent: "space-between",
-                    backgroundColor: useThemeColor({}, "itemBackground"),
+                    backgroundColor: useThemeColor({}, "background"),
                     paddingVertical: 8,
                     paddingHorizontal: 16,
                 }}
@@ -139,7 +139,7 @@ const PersonalInfomation = () => {
                         style={{
                             backgroundColor: useThemeColor(
                                 {},
-                                "itemBackground"
+                                "background"
                             ),
                             padding: 16,
                         }}
@@ -205,10 +205,11 @@ const PersonalInfomation = () => {
                     <Space size={{ height: 16, width: 0 }} />
                     <TouchableOpacity
                         style={{
-                            backgroundColor: useThemeColor(
-                                {},
-                                "itemBackground"
-                            ),
+                            borderColor: useThemeColor({}, "border"),
+                            borderWidth: 1,
+                            marginHorizontal: 16,
+                            borderRadius: 8,
+                            backgroundColor: useThemeColor({}, "itemBackground"),
                         }}
                         onPress={() => {
                             router.navigate(
@@ -238,7 +239,7 @@ const PersonalInfomation = () => {
                 </ScrollView>
                 <View
                     style={{
-                        backgroundColor: useThemeColor({}, "itemBackground"),
+                        backgroundColor: useThemeColor({}, "background"),
                         padding: 16,
                     }}
                 >

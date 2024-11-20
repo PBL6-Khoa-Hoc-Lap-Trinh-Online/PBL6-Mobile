@@ -17,15 +17,18 @@ import { Address } from "@/type/addressType";
 import { District, Province, Ward } from "@/type/locationType";
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
-import { AddSquare, Back, Trash } from "iconsax-react-native";
+import { AddSquare, Back, Edit, Trash } from "iconsax-react-native";
 import React, { useEffect, useMemo, useRef } from "react";
-import { TouchableOpacity, View } from "react-native";
+import { TextInput, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 
 const AddressBook = () => {
     const [addressList, setAddressList] = React.useState<Address[]>([]);
     const itemBackground = useThemeColor({}, "itemBackground");
     const white = useThemeColor({}, "white");
+    const border = useThemeColor({}, "border");
+    const icon = useThemeColor({}, "icon");
+    const primary = useThemeColor({}, "primary");
 
     // state
     const [isButtonAddLoading, setIsButtonAddLoading] = React.useState(false);
@@ -231,7 +234,7 @@ const AddressBook = () => {
             <Row
                 style={{
                     justifyContent: "space-between",
-                    backgroundColor: useThemeColor({}, "itemBackground"),
+                    backgroundColor: useThemeColor({}, "background"),
                     paddingVertical: 8,
                     paddingHorizontal: 16,
                 }}
@@ -248,16 +251,12 @@ const AddressBook = () => {
 
                 <Button
                     variant="circle"
-                    icon={<Back size={20} color={useThemeColor({}, "text")} />}
-                    onPress={() => {}}
+                    onPress={() => { }}
                     style={{ opacity: 0, pointerEvents: "none" }}
                 />
             </Row>
 
             <ThemeView
-                style={{
-                    paddingHorizontal: 0,
-                }}
             >
                 {addressList.map((address, index) => {
                     return (
@@ -265,7 +264,9 @@ const AddressBook = () => {
                             key={index}
                             style={{
                                 padding: 16,
-                                backgroundColor: itemBackground,
+                                borderColor: border,
+                                borderWidth: 1,
+                                borderRadius: 8,
                             }}
                         >
                             <Row justifyContent="space-between">
@@ -276,7 +277,7 @@ const AddressBook = () => {
                                     }}
                                     text={address.receiver_name}
                                 />
-                                <ThemeText
+                                {/* <ThemeText
                                     type="link"
                                     style={{}}
                                     text="Update"
@@ -288,7 +289,19 @@ const AddressBook = () => {
                                             address.receiver_address_id
                                         );
                                     }}
-                                />
+                                /> */}
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        handleOpenBottomSheetUpdate(
+                                            address.receiver_name,
+                                            address.receiver_phone,
+                                            address.receiver_address,
+                                            address.receiver_address_id
+                                        );
+                                    }}
+                                >
+                                    <Edit size={20} color={primary} />
+                                </TouchableOpacity>
                             </Row>
                             <Space size={{ height: 8, width: 0 }} />
                             <ThemeText
@@ -334,6 +347,10 @@ const AddressBook = () => {
                 snapPoints={snapPoints}
                 enablePanDownToClose={true}
                 index={-1}
+                backgroundStyle={{
+                    borderColor: useThemeColor({}, "border"),
+                    borderWidth: 1
+                }}
             >
                 <BottomSheetScrollView
                     style={{
@@ -347,7 +364,7 @@ const AddressBook = () => {
                             padding: 16,
                             backgroundColor: useThemeColor(
                                 {},
-                                "itemBackground"
+                                "background"
                             ),
                         }}
                     >
@@ -359,7 +376,7 @@ const AddressBook = () => {
                             padding: 16,
                             backgroundColor: useThemeColor(
                                 {},
-                                "itemBackground"
+                                "background"
                             ),
                         }}
                     >
@@ -451,7 +468,7 @@ const AddressBook = () => {
                             padding: 16,
                             backgroundColor: useThemeColor(
                                 {},
-                                "itemBackground"
+                                "background"
                             ),
                         }}
                     >
@@ -472,6 +489,10 @@ const AddressBook = () => {
                 snapPoints={snapPoints}
                 enablePanDownToClose={true}
                 index={-1}
+                backgroundStyle={{
+                    borderColor: useThemeColor({}, "border"),
+                    borderWidth: 1
+                }}
             >
                 <BottomSheetScrollView
                     style={{
@@ -485,7 +506,7 @@ const AddressBook = () => {
                             padding: 16,
                             backgroundColor: useThemeColor(
                                 {},
-                                "itemBackground"
+                                "background"
                             ),
                         }}
                     >
@@ -497,7 +518,7 @@ const AddressBook = () => {
                             padding: 16,
                             backgroundColor: useThemeColor(
                                 {},
-                                "itemBackground"
+                                "background"
                             ),
                         }}
                     >
@@ -519,11 +540,25 @@ const AddressBook = () => {
                             placeholder="Enter receiver phone"
                         />
                         <Space size={{ height: 16, width: 0 }} />
-                        <Input
-                            label="Current Address"
-                            value={receiverAddressSelected}
-                            disabled={true}
+
+                        <ThemeText
+                            text="Address"
+                            type="title"
+                            style={{
+                                fontSize: 16,
+                                fontWeight: "500",
+                                marginBottom: 4,
+                                marginLeft: 4,
+                            }}
                         />
+                        <View style={{
+                            padding: 16,
+                            borderColor: border,
+                            borderWidth: 1,
+                            borderRadius: 8,
+                        }}>
+                            <ThemeText type="medium" text={receiverAddressSelected} />
+                        </View>
                         <Space size={{ height: 16, width: 0 }} />
                         <Select
                             numsOfVisibleItems={3}
@@ -583,10 +618,10 @@ const AddressBook = () => {
                     <Space size={{ height: 16, width: 0 }} />
                     <TouchableOpacity
                         style={{
-                            backgroundColor: useThemeColor(
-                                {},
-                                "itemBackground"
-                            ),
+                            marginHorizontal: 16,
+                            borderColor: useThemeColor({}, "red"),
+                            borderWidth: 1,
+                            borderRadius: 8,
                         }}
                         onPress={async () => {
                             // call api to delete address
@@ -634,7 +669,7 @@ const AddressBook = () => {
                             padding: 16,
                             backgroundColor: useThemeColor(
                                 {},
-                                "itemBackground"
+                                "background"
                             ),
                         }}
                     >

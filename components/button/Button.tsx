@@ -9,9 +9,10 @@ import LottieView from "lottie-react-native";
 interface ButtonProps {
     text?: string;
     icon?: React.ReactNode;
+    iconPosition?: "left" | "right";
     variant?: "circle" | "outline" | 'link' | 'fill';
     color?: 'primary' | 'secondary' | 'danger' | 'text' | 'border';
-    onPress: () => void;
+    onPress?: () => void;
     style?: ViewStyle;
 
     disabled?: boolean;
@@ -22,10 +23,11 @@ interface ButtonProps {
 const Button = ({
     text,
     variant = "fill",
-    color= 'primary',
+    color = 'primary',
     onPress,
     textStyles,
     icon,
+    iconPosition = "left",
     style,
     disabled = false,
     loading = false,
@@ -69,19 +71,20 @@ const Button = ({
                     ...style,
                 }}
             >
-                {icon && icon}
-                {icon && <Space size={{ width: 8, height: 0 }} />}
+                {iconPosition === 'left' && icon && icon}
+                {iconPosition === 'left' && icon && <Space size={{ width: 8, height: 0 }} />}
                 <Text
                     numberOfLines={1}
                     style={{
                         color: useThemeColor({}, color as any),
                         fontSize: 14,
-                        
                         ...textStyles,
                     }}
                 >
                     {text}
                 </Text>
+                {iconPosition === 'right' && <Space size={{ width: 8, height: 0 }} />}
+                {iconPosition === 'right' && icon && icon}
             </TouchableOpacity>
         );
     }
@@ -103,10 +106,10 @@ const Button = ({
                     ...style,
                 }}
             >
-                {icon && icon}
-                {icon && <Space size={{ width: 8, height: 0 }} />}
+                {iconPosition === 'left' && icon && icon}
+                {iconPosition === 'left' && icon && <Space size={{ width: 8, height: 0 }} />}
                 <Text
-                numberOfLines={1}
+                    numberOfLines={1}
                     style={{
                         color: useThemeColor({}, color as any),
                         fontSize: 14,
@@ -116,6 +119,8 @@ const Button = ({
                 >
                     {text}
                 </Text>
+                {iconPosition === 'right' && <Space size={{ width: 8, height: 0 }} />}
+                {iconPosition === 'right' && icon && icon}
             </TouchableOpacity>
         )
     }
@@ -145,10 +150,10 @@ const Button = ({
                     />
                 ) : (
                     <Row>
-                        {icon && icon}
-                        {icon && <Space size={{ width: 8, height: 0 }} />}
+                        {iconPosition === 'left' && icon && icon}
+                        {iconPosition === 'left' && icon && <Space size={{ width: 8, height: 0 }} />}
                         <Text
-                        numberOfLines={1}
+                            numberOfLines={1}
                             style={{
                                 color: color === "primary" ? "#fff" : "#000",
                                 fontSize: 16,
@@ -158,6 +163,8 @@ const Button = ({
                         >
                             {text}
                         </Text>
+                        {iconPosition === 'right' && <Space size={{ width: 8, height: 0 }} />}
+                        {iconPosition === 'right' && icon && icon}
                     </Row>
                 )}
             </TouchableOpacity>

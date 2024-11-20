@@ -19,7 +19,8 @@ interface CategoryCardProps {
     style?: ViewStyle;
     imageStyle?: ImageStyle;
     titleStyle?: TextStyle;
-    
+
+    type?: 'circle' | 'square';
 }
 
 const CategoryCard = ({
@@ -29,8 +30,60 @@ const CategoryCard = ({
     style,
     imageStyle,
     titleStyle,
+    type = 'square'
 }: CategoryCardProps) => {
     const theme = useColorScheme() ?? 'light';
+
+    if (type === 'circle')
+        return (
+            <TouchableOpacity
+                onPress={onPress}
+                style={{
+                    flex: 1,
+                    borderRadius: 8,
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    ...style,
+                }}
+            >
+                <Image
+                    source={{
+                        uri:
+                            !imageUrl
+                                ? Image.resolveAssetSource(require("../../assets/images/unknownImage.png")).uri
+                                : imageUrl,
+                    }}
+                    style={{
+                        width: "100%",
+                        borderRadius: 100,
+                        height: 100,
+                        borderTopLeftRadius: 8,
+                        borderTopRightRadius: 8,
+                        objectFit: "cover",
+                        ...imageStyle,
+                    }}
+                />
+                <Row
+                    style={{
+                        marginBottom: 8,
+                        marginTop: 8,
+                        paddingHorizontal: 8,
+                    }}
+                >
+                    <ThemeText
+                        ellipsizeMode="tail"
+                        numOfLines={1}
+                        text={title.toLocaleUpperCase()}
+                        type="small"
+                        style={{
+                            ...titleStyle,
+                            textAlign: "center",
+                        }}
+                    />
+                </Row>
+            </TouchableOpacity>
+        )
+
     return (
         <TouchableOpacity
             onPress={onPress}

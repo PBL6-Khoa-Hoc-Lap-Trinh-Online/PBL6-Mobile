@@ -61,7 +61,7 @@ const ChangePassword = () => {
             <Row
                 style={{
                     justifyContent: "space-between",
-                    backgroundColor: useThemeColor({}, "itemBackground"),
+                    backgroundColor: useThemeColor({}, "background"),
                     paddingVertical: 8,
                     paddingHorizontal: 16,
                 }}
@@ -92,7 +92,7 @@ const ChangePassword = () => {
                         style={{
                             backgroundColor: useThemeColor(
                                 {},
-                                "itemBackground"
+                                "background"
                             ),
                             padding: 16,
                             height: "100%",

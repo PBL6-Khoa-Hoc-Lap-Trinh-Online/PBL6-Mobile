@@ -10,7 +10,7 @@ import Toast from "react-native-toast-message";
 
 const Categories = () => {
     const [search, setSearch] = React.useState("");
-    let width = Dimensions.get('screen').width/2 - 32
+    let width = Dimensions.get('screen').width / 2 - 32
 
     const [categories, setCategories] = React.useState<CategoryType[]>([]);
     useEffect(() => {
@@ -31,20 +31,24 @@ const Categories = () => {
         <ThemeView>
             <FlatList
                 data={categories}
-                columnWrapperStyle={{justifyContent:'space-between', alignItems: 'flex-start'}}
+                columnWrapperStyle={{ justifyContent: 'space-between', alignItems: 'flex-start' }}
                 renderItem={({ item }) => (
                     <CategoryCard
                         key={item.category_id}
                         imageUrl={item.category_thumbnail}
                         title={item.category_name}
                         onPress={() => {
-                            router.navigate(
-                                ("/(tabs)/categories/" +
-                                    item.category_id) as Href
-                            );
+                            if (item.category_type === 'medicine')
+                                router.navigate(
+                                    ("/(tabs)/categories/medicine/" +
+                                        item.category_id) as Href
+                                );
+                            if (item.category_type === 'disease')
+                                router.navigate(
+                                    ("/(tabs)/categories/disease" as Href))
                         }}
                         style={{
-                            width:width, height:width, margin: 8, flex: 0
+                            width: width, height: width, margin: 8, flex: 0
                         }}
                     />
                 )}

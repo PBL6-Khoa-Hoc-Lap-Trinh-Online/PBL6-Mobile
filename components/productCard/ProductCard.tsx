@@ -9,8 +9,8 @@ import { convertPrice } from "@/utils/convertPrice";
 interface ProductCardProps {
     imageUrls: string[];
     title: string;
-    price: string;
-    sold: number;
+    price?: string;
+    sold?: number;
     onPress?: () => void;
     style?: ViewStyle;
     imageStyle?: ImageStyle;
@@ -51,7 +51,7 @@ const ProductCard = ({
                 source={{
                     uri:
                         imageUrls[0] ??
-                        Image.resolveAssetSource(require('../../assets/images/unknownImage.jpg')).uri
+                        Image.resolveAssetSource(require('../../assets/images/unknownImage.png')).uri
                 }}
                 style={{
                     width: "100%",
@@ -84,31 +84,35 @@ const ProductCard = ({
                         numOfLines={3}
                     />
                 </Row>
-                <Row justifyContent="space-between" style={{
-                    marginTop: 8,
-                    flex: 1,
-                }}>
-                    <Row>
-                        <ThemeText text={`Sold: `} type="small" style={{}} />
-                        <ThemeText text={sold.toString()} type="small" style={{ fontWeight: "bold" }} />
-                    </Row>
-                    <Row>
-                        <ThemeText
-                            text={convertPrice(parseInt(price))}
-                            type="medium"
-                            style={{
-                                fontWeight: "bold",
-                            }}
-                        />
-                        <ThemeText
-                            text=" vnđ"
-                            type="small"
-                            style={{
-                                fontWeight: "500",
-                            }}
-                        />
-                    </Row>
-                </Row>
+                {
+                    price && (
+                        <Row justifyContent="space-between" style={{
+                            marginTop: 8,
+                            flex: 1,
+                        }}>
+                            <Row>
+                                <ThemeText text={`Sold: `} type="small" style={{}} />
+                                <ThemeText text={sold?.toString()} type="small" style={{ fontWeight: "bold" }} />
+                            </Row>
+                            <Row>
+                                <ThemeText
+                                    text={convertPrice(parseInt(price))}
+                                    type="medium"
+                                    style={{
+                                        fontWeight: "bold",
+                                    }}
+                                />
+                                <ThemeText
+                                    text=" vnđ"
+                                    type="small"
+                                    style={{
+                                        fontWeight: "500",
+                                    }}
+                                />
+                            </Row>
+                        </Row>
+                    )
+                }
             </ThemeView>
         </TouchableOpacity>
     );

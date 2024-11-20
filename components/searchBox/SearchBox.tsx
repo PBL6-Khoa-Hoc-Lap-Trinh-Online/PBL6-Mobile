@@ -4,10 +4,10 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 
 interface SearchBoxProps {
     placeholder: string;
-    value: string;
+    value?: string;
     icon?: ReactNode;
 
-    onChangeText: (text: string) => void;
+    onChangeText?: (text: string) => void;
 }
 
 const SearchBox = ({

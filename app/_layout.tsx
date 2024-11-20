@@ -1,7 +1,7 @@
 import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
+    DarkTheme,
+    DefaultTheme,
+    ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
@@ -41,20 +41,20 @@ export default function RootLayout() {
         <AuthProvider>
             <CartProvider>
                 <GestureHandlerRootView style={{ flex: 1 }}>
-                        <ThemeProvider
-                            value={
-                                colorScheme === "dark"
-                                    ? DarkTheme
-                                    : DefaultTheme
-                            }
-                        >
-                            <StatusBar
-                                style="auto"
-                                backgroundColor={backgroundColorTheme}
-                            />
-                            <Slot />
-                            <Toast autoHide position="top" />
-                        </ThemeProvider>
+                    <ThemeProvider
+                        value={
+                            colorScheme === "dark"
+                                ? DarkTheme
+                                : DefaultTheme
+                        }
+                    >
+                        <StatusBar
+                            style="auto"
+                            backgroundColor={backgroundColorTheme}
+                        />
+                        <Slot />
+                        <Toast autoHide position="top" />
+                    </ThemeProvider>
                 </GestureHandlerRootView>
             </CartProvider>
         </AuthProvider>

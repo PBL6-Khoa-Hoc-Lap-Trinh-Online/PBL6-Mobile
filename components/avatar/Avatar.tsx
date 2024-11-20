@@ -2,7 +2,7 @@ import React from "react";
 import { Image } from "react-native";
 
 interface AvatarProps {
-    avatarUrl: string;
+    avatarUrl?: string;
     size?: number;
 }
 const Avatar = ({ avatarUrl, size = 56 }: AvatarProps) => {
