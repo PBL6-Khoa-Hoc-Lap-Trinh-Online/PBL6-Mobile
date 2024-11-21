@@ -64,6 +64,7 @@ const SignIn = () => {
 
             <Button
                 text="Sign in"
+                loading={isLoading}
                 onPress={async () => {
                     setIsLoading(true);
                     try {

@@ -37,7 +37,7 @@ const Products = () => {
         categoryId: string;
     }>();
     const screenWidth = Dimensions.get('screen').width
-    let width = Dimensions.get('screen').width / 2 - 32
+    let width = Dimensions.get('screen').width / 2 - 16
     const { cartItems } = useContext(CartContext);
 
     const primaryColor = useThemeColor({}, "primary");
@@ -141,9 +141,8 @@ const Products = () => {
                     backgroundColor: useThemeColor({}, "background"),
                     paddingVertical: 8,
                     paddingHorizontal: 16,
-                    marginTop: -16,
                     marginHorizontal: -16,
-                    marginBottom: 16,
+                    marginBottom: 8,
                 }}
             >
                 <Button
@@ -201,7 +200,7 @@ const Products = () => {
                             zIndex: 100,
                             width: 100,
                             borderRadius: 8,
-                            margin: 8,
+                            margin: 4,
                             borderWidth: activeIndex === index ? 0.5 : 0,
                             borderColor:
                                 activeIndex === index
@@ -262,7 +261,7 @@ const Products = () => {
                             );
                         }}
                         style={{
-                            width: width, margin: 8, flex: 0
+                            width: width, margin: 4, flex: 0
                         }}
                     />
                 )}

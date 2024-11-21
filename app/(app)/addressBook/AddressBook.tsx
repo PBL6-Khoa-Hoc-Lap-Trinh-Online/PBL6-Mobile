@@ -99,12 +99,21 @@ const AddressBook = () => {
         receiverName: string,
         receiverPhone: string,
         receiverAddress: string,
+        receiverProvince: string,
+        receiverDistrict: string,
+        receiverWard: string,
         receiverAddressId: number
     ) => {
+        handleSelectProvince(receiverProvince);
+        handleSelectDistrict(receiverDistrict);
+        
         setReceiverAddressIdSelected(receiverAddressId);
         setReceiverNameSelected(receiverName);
         setReceiverPhoneSelected(receiverPhone);
-        setReceiverAddressSelected(receiverAddress);
+        setReceiverProvinceSelected(receiverProvince);
+        setReceiverDistrictSelected(receiverDistrict);
+        setReceiverWardSelected(receiverWard);
+        setReceiverStreetNameSelected(receiverAddress);
 
         bottomSheetUpdateRef.current?.snapToIndex(1);
     };
@@ -144,23 +153,14 @@ const AddressBook = () => {
 
         setIsButtonAddLoading(true);
 
-        const wardName = wards.find(
-            (w) => w.id.toString() === receiverWard
-        )?.name;
-        const districtName = districts.find(
-            (d) => d.id.toString() === receiverDistrict
-        )?.name;
-        const provinceName = provinces.find(
-            (p) => p.id.toString() === receiverProvince
-        )?.name;
-
-        const receiverAddress = `${receiverStreetName}, ${wardName}, ${districtName}, ${provinceName}`;
-        // call api to add address
         try {
-            const rs = await addAddress(
+            await addAddress(
                 receiverName,
                 receiverPhone,
-                receiverAddress
+                receiverProvince,
+                receiverDistrict,
+                receiverWard,
+                receiverStreetName
             );
             bottomSheetRef.current?.close();
             fetchAddressList();
@@ -185,35 +185,27 @@ const AddressBook = () => {
 
             return;
         }
-
         setIsButtonUpdateLoading(true);
-
-        // call api to add address
         try {
-            let receiverAddressChange = receiverAddressSelected;
-            if (
-                receiverProvinceSelected !== "" &&
-                receiverDistrictSelected !== "" &&
-                receiverWardSelected !== "" &&
-                receiverStreetNameSelected !== ""
-            ) {
-                const provinceName = provinces.find(
-                    (p) => p.id.toString() === receiverProvinceSelected
-                )?.name;
-                const districtName = districts.find(
-                    (d) => d.id.toString() === receiverDistrictSelected
-                )?.name;
-                const wardName = wards.find(
-                    (w) => w.id.toString() === receiverWardSelected
-                )?.name;
-                receiverAddressChange = `${receiverStreetNameSelected}, ${wardName}, ${districtName}, ${provinceName}`;
-            }
+
+            console.log(
+                receiverAddressIdSelected,
+                receiverNameSelected,
+                receiverPhoneSelected,
+                receiverProvinceSelected,
+                receiverDistrictSelected,
+                receiverWardSelected,
+                receiverStreetNameSelected
+            )
 
             const rs = await updateAddress(
                 receiverAddressIdSelected,
                 receiverNameSelected,
                 receiverPhoneSelected,
-                receiverAddressChange
+                receiverProvinceSelected,
+                receiverDistrictSelected,
+                receiverWardSelected,
+                receiverStreetNameSelected
             );
             bottomSheetUpdateRef.current?.close();
             fetchAddressList();
@@ -267,6 +259,7 @@ const AddressBook = () => {
                                 borderColor: border,
                                 borderWidth: 1,
                                 borderRadius: 8,
+                                marginBottom: 8,
                             }}
                         >
                             <Row justifyContent="space-between">
@@ -277,26 +270,16 @@ const AddressBook = () => {
                                     }}
                                     text={address.receiver_name}
                                 />
-                                {/* <ThemeText
-                                    type="link"
-                                    style={{}}
-                                    text="Update"
-                                    onPress={async () => {
-                                        await handleOpenBottomSheetUpdate(
-                                            address.receiver_name,
-                                            address.receiver_phone,
-                                            address.receiver_address,
-                                            address.receiver_address_id
-                                        );
-                                    }}
-                                /> */}
                                 <TouchableOpacity
                                     onPress={() => {
                                         handleOpenBottomSheetUpdate(
                                             address.receiver_name,
                                             address.receiver_phone,
                                             address.receiver_address,
-                                            address.receiver_address_id
+                                            address.province_id.toString(),
+                                            address.district_id.toString(),
+                                            address.ward_id.toString(),
+                                            address.receiver_address_id,
                                         );
                                     }}
                                 >
@@ -311,7 +294,7 @@ const AddressBook = () => {
                             />
                             <Space size={{ height: 8, width: 0 }} />
                             <ThemeText
-                                text={address.receiver_address}
+                                text={`${address.receiver_address}, ${address.ward_name}, ${address.district_name}, ${address.province_name}`}
                                 type="medium"
                                 style={{}}
                             />
@@ -551,14 +534,6 @@ const AddressBook = () => {
                                 marginLeft: 4,
                             }}
                         />
-                        <View style={{
-                            padding: 16,
-                            borderColor: border,
-                            borderWidth: 1,
-                            borderRadius: 8,
-                        }}>
-                            <ThemeText type="medium" text={receiverAddressSelected} />
-                        </View>
                         <Space size={{ height: 16, width: 0 }} />
                         <Select
                             numsOfVisibleItems={3}

@@ -21,6 +21,7 @@ const Disease = () => {
             try {
                 const rs = await getCategeryDisease(categoryId)
                 setDiseaseDetail(rs.data)
+                console.log(rs.data?.general_overview.replaceAll('<br>', ''))
             } catch (error: any) {
                 Toast.show({
                     type: "error",
@@ -33,34 +34,40 @@ const Disease = () => {
     return (
         <ThemeView>
             <ScrollView>
-                <RenderHtml 
-                    source={{ html:  diseaseDetail?.general_overview + '<script src="https://cdn.tailwindcss.com"></script>' || ''}}
+                <RenderHtml
+                    source={{ html: diseaseDetail?.general_overview.replaceAll('<p><br></p>', '') || '' }}
                     contentWidth={width}
                     classesStyles={htmlStyle}
                 />
-                <RenderHtml 
-                    source={{ html: diseaseDetail?.symptoms || '' }}
+                <RenderHtml
+                    source={{ html: diseaseDetail?.symptoms.replaceAll('<p><br></p>', '') || '' }}
                     contentWidth={width}
+                    classesStyles={htmlStyle}
                 />
-                <RenderHtml 
-                    source={{ html: diseaseDetail?.cause || '' }}
+                <RenderHtml
+                    source={{ html: diseaseDetail?.cause.replaceAll('<p><br></p>', '') || '' }}
                     contentWidth={width}
+                    classesStyles={htmlStyle}
                 />
-                <RenderHtml 
-                    source={{ html: diseaseDetail?.risk_subjects || '' }}
+                <RenderHtml
+                    source={{ html: diseaseDetail?.risk_subjects.replaceAll('<p><br></p>', '') || '' }}
                     contentWidth={width}
+                    classesStyles={htmlStyle}
                 />
-                <RenderHtml 
-                    source={{ html: diseaseDetail?.diagnosis || '' }}
+                <RenderHtml
+                    source={{ html: diseaseDetail?.diagnosis.replaceAll('<p><br></p>', '') || '' }}
                     contentWidth={width}
+                    classesStyles={htmlStyle}
                 />
-                <RenderHtml 
-                    source={{ html: diseaseDetail?.prevention || '' }}
+                <RenderHtml
+                    source={{ html: diseaseDetail?.prevention.replaceAll('<p><br></p>', '') || '' }}
                     contentWidth={width}
+                    classesStyles={htmlStyle}
                 />
-                <RenderHtml 
-                    source={{ html: diseaseDetail?.treatment_method || '' }}
+                <RenderHtml
+                    source={{ html: diseaseDetail?.treatment_method.replaceAll('<p><br></p>', '') || '' }}
                     contentWidth={width}
+                    classesStyles={htmlStyle}
                 />
             </ScrollView>
         </ThemeView>

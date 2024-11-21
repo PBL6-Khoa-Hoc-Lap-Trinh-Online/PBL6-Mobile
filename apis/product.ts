@@ -14,8 +14,16 @@ export const getProductByIdApi = async (productId: number) => {
 }
 
 export const getTopSellingProductsApi = async (
-    limit: number = 8
+    limit: number = 16
 ) => {
     const response = await httpRequests.get(`/products?typesort=product_sold&sortlatest=true&paginate=${limit}`)
+    return response
+}
+
+export const getNewestProductsApi = async (
+    limit: number = 16,
+    page: number = 1
+) => {
+    const response = await httpRequests.get(`/products?typesort=new&sortlatest=true&paginate=${limit}&page=${page}`)
     return response
 }

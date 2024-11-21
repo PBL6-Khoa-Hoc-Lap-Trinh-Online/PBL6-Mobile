@@ -23,8 +23,6 @@ export const updateProfileCurrentUser = async (
         email: user_email,
     })
 
-    
-
     return response
 }
 
@@ -66,11 +64,17 @@ export const getAllAddress = async () => {
 export const addAddress = async (
     receiver_name: string,
     receiver_phone: string,
+    province_id: string,
+    district_id: string,
+    ward_id: string,
     receiver_address: string,
 ) => {
     const response = await httpRequests.post("/receiver-address/add", {
         receiver_name: receiver_name,
         receiver_phone: receiver_phone,
+        province_id: province_id,
+        district_id: district_id,
+        ward_id: ward_id,
         receiver_address: receiver_address,
     })
     return response
@@ -85,11 +89,17 @@ export const updateAddress = async (
     receiver_address_id: number,
     receiver_name: string,
     receiver_phone: string,
+    province_id: string,
+    district_id: string,
+    ward_id: string,
     receiver_address: string,
 ) => {
     const response = await httpRequests.post(`/receiver-address/update/${receiver_address_id}`, {
         receiver_name: receiver_name,
         receiver_phone: receiver_phone,
+        province_id: province_id,
+        district_id: district_id,
+        ward_id: ward_id,
         receiver_address: receiver_address,
     })
     return response

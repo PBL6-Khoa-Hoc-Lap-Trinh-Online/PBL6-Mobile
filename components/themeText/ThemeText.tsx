@@ -56,7 +56,6 @@ const ThemeText = ({
                     color: textColorTheme,
                     fontSize: 36,
                     fontWeight: "bold",
-
                     ...style,
                 }}
             >

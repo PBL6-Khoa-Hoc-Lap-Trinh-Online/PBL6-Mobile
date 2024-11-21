@@ -130,7 +130,7 @@ const CategoryCard = ({
             >
                 <ThemeText
                     ellipsizeMode="tail"
-                    numOfLines={6}
+                    numOfLines={3}
                     text={title.toLocaleUpperCase()}
                     type="small"
                     style={{

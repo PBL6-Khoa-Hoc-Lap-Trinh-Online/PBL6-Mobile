@@ -16,7 +16,7 @@ const ThemeView = (props: ThemeViewProps) => {
             style={{
                 backgroundColor: backgroundTheme,
                 flex: 1,
-                paddingHorizontal: 16,
+                paddingHorizontal: 8,
                 paddingTop: 8,
                 ...style,
             }}

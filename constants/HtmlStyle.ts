@@ -41,9 +41,6 @@ export const htmlStyle = {
     "ql-font-Arial": {
         fontFamily: "Arial",
     },
-    "ql-cursor": {
-        cursor: "pointer",
-    },
     ".ql-editor strong": {
         fontWeight: "bold",
     },
@@ -88,7 +85,6 @@ export const htmlStyle = {
         color: "#2567a5",
         textDecoration: "underline",
         fontSize: "1rem",
-        cursor: "pointer",
     },
     ".ql-editor .ql-font-Montserrat": {
         fontFamily: "'Montserrat' !important",
@@ -144,17 +140,16 @@ export const htmlStyle = {
     ".ql-editor .custom-blockquote": {
         width: "100%",
         margin: "0 auto 0 0 !important",
-        borderLeft: "4px solid #ccc !important",
         padding: "0 1.875rem 0 1.25rem !important",
         color: "#555555",
     },
     ":root": {
-        "--font-size": "1rem",
-        "--font-family": "Arial, sans-serif",
-        "--color": "#000000",
-        "--background-color": "#ffffff",
-        "--font-weight": "normal",
-        "--font-style": "normal",
+        fontSize: "1rem",
+        fontFamily: "Arial, sans-serif",
+        color: "#000000",
+        backgroundColor: "#ffffff",
+        fontWeight: "normal",
+        fontStyle: "normal",
     },
     ".ql-editor .custom-list-item, .ql-editor .custom-list-item li, .ql-editor .custom-list-item li::before": {
         fontSize: "var(--font-size)",

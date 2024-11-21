@@ -1,5 +1,5 @@
 import { getAllCategoriesApi } from '@/apis/category';
-import { getTopSellingProductsApi } from '@/apis/product';
+import { getNewestProductsApi, getTopSellingProductsApi } from '@/apis/product';
 import Avatar from '@/components/avatar/Avatar';
 import BannerProduct from '@/components/bannerProduct/BannerProduct';
 import Button from '@/components/button/Button';
@@ -13,6 +13,7 @@ import ThemeView from '@/components/themeView/ThemeView';
 import { useAuth } from '@/context/auth';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { CategoryType } from '@/type/categoryType';
+import { ProductType } from '@/type/productType';
 import { Href, router } from 'expo-router';
 import { HambergerMenu, SearchNormal } from 'iconsax-react-native';
 import React, { useEffect } from 'react';
@@ -33,16 +34,25 @@ const Home = () => {
     ]);
     const [activeIndex, setActiveIndex] = React.useState(0);
 
-    const [topSellingProducts, setTopSellingProducts] = React.useState([]);
+    const [topSellingProducts, setTopSellingProducts] = React.useState<{
+        current_page: number;
+        data: ProductType[];
+    }>();
+    const [newestProducts, setNewestProducts] = React.useState<{
+        current_page: number;
+        data: ProductType[];
+    }>();
+
 
     useEffect(() => {
         (async () => {
             try {
                 const rs = await getAllCategoriesApi();
                 setCategories(rs.data);
-
                 const topSellingProducts = await getTopSellingProductsApi();
                 setTopSellingProducts(topSellingProducts.data);
+                const newestProducts = await getNewestProductsApi();
+                setNewestProducts(newestProducts.data);
             } catch (error: any) {
                 Toast.show({
                     text1: error.messages[0],
@@ -55,9 +65,7 @@ const Home = () => {
     return (
         <ThemeView>
             <ScrollView
-                style={{
-                    marginBottom: 16,
-                }}
+                showsVerticalScrollIndicator={false}
             >
                 <Row
                     style={{
@@ -100,7 +108,7 @@ const Home = () => {
                 <Space size={{ width: 0, height: 16 }} />
                 <Carousel
                     loop
-                    width={width - 32}
+                    width={width - 16}
                     height={width / 2}
                     autoPlay
                     autoPlayInterval={3000}
@@ -183,29 +191,128 @@ const Home = () => {
                 <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
-                    style={{
-                        flexGrow: 0,
-                    }}
-                >
-                    <Row>
-                        {topSellingProducts.map((item: any) => (
-                            <CategoryCard
-                                key={item.product_id}
-                                imageUrl={item.product_images[0]}
-                                title={item.product_name}
-                                onPress={() => {
-                                    router.navigate(
-                                        ("/(tabs)/product/" + item.product_id) as Href
+                    contentContainerStyle={{
+                        justifyContent: 'center',
+                    }}>
+                    <View>
+                        <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                            {topSellingProducts &&
+                                topSellingProducts.data.map((item, i) => {
+                                    if (i % 2 === 0) return
+                                    return (
+                                        <CategoryCard
+                                            key={item.product_id}
+                                            imageUrl={item.product_images ? item.product_images[0] : 'https://cdni.iconscout.com/illustration/premium/thumb/product-is-empty-illustration-download-in-svg-png-gif-file-formats--no-records-list-record-emply-data-user-interface-pack-design-development-illustrations-6430770.png?f=webp'}
+                                            title={item.product_name}
+                                            onPress={() => {
+                                                router.navigate(
+                                                    ("/(app)/products/product/" +
+                                                        item.product_id) as Href
+                                                );
+                                            }}
+                                            style={{
+                                                width: (width - 32) / 2,
+                                                marginRight: 8,
+
+                                            }}
+                                        />
                                     );
-                                }}
-                                style={{
-                                    width: (width - 32) / 2,
-                                    marginRight: 8
-                                }}
-                            />
-                        ))}
-                    </Row>
+                                })
+                            }
+                        </View>
+                        <Space size={{ width: 0, height: 8 }} />
+                        <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                            {topSellingProducts &&
+                                topSellingProducts.data.map((item, i) => {
+                                    if (i % 2 !== 0) return
+                                    return (
+                                        <CategoryCard
+                                            key={item.product_id}
+                                            imageUrl={item.product_images ? item.product_images[0] : 'https://cdni.iconscout.com/illustration/premium/thumb/product-is-empty-illustration-download-in-svg-png-gif-file-formats--no-records-list-record-emply-data-user-interface-pack-design-development-illustrations-6430770.png?f=webp'}
+                                            title={item.product_name}
+                                            onPress={() => {
+                                                router.navigate(
+                                                    ("/(app)/products/product/" +
+                                                        item.product_id) as Href
+                                                );
+                                            }}
+                                            style={{
+                                                width: (width - 32) / 2,
+                                                marginRight: 8,
+                                            }}
+                                        />
+                                    );
+                                })
+                            }
+                        </View>
+                    </View>
                 </ScrollView>
+                <Space size={{ width: 0, height: 16 }} />
+                <BannerProduct
+                    title='Newest Products'
+                />
+                <Space size={{ width: 0, height: 8 }} />
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{
+                        justifyContent: 'center',
+                    }}>
+                    <View>
+                        <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                            {topSellingProducts &&
+                                topSellingProducts.data.map((item, i) => {
+                                    if (i % 2 === 0) return
+                                    return (
+                                        <CategoryCard
+                                            key={item.product_id}
+                                            imageUrl={item.product_images ? item.product_images[0] : 'https://cdni.iconscout.com/illustration/premium/thumb/product-is-empty-illustration-download-in-svg-png-gif-file-formats--no-records-list-record-emply-data-user-interface-pack-design-development-illustrations-6430770.png?f=webp'}
+                                            title={item.product_name}
+                                            onPress={() => {
+                                                router.navigate(
+                                                    ("/(app)/products/product/" +
+                                                        item.product_id) as Href
+                                                );
+                                            }}
+                                            style={{
+                                                width: (width - 32) / 2,
+                                                marginRight: 8,
+                                                height: (width - 32) / 2,
+                                            }}
+                                        />
+                                    );
+                                })
+                            }
+                        </View>
+                        <Space size={{ width: 0, height: 8 }} />
+                        <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                            {newestProducts &&
+                                newestProducts.data.map((item, i) => {
+                                    if (i % 2 !== 0) return
+                                    return (
+                                        <CategoryCard
+                                            key={item.product_id}
+                                            imageUrl={item.product_images ? item.product_images[0] : 'https://cdni.iconscout.com/illustration/premium/thumb/product-is-empty-illustration-download-in-svg-png-gif-file-formats--no-records-list-record-emply-data-user-interface-pack-design-development-illustrations-6430770.png?f=webp'}
+                                            title={item.product_name}
+                                            onPress={() => {
+                                                router.navigate(
+                                                    ("/(app)/products/product/" +
+                                                        item.product_id) as Href
+                                                );
+                                            }}
+                                            style={{
+                                                width: (width - 32) / 2,
+                                                marginRight: 8,
+                                                height: (width - 32) / 2,
+                                            }}
+                                        />
+                                    );
+                                })
+                            }
+                        </View>
+                    </View>
+                </ScrollView>
+                <Space size={{ width: 0, height: 16 }} />
             </ScrollView>
         </ThemeView>
     )

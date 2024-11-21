@@ -10,7 +10,7 @@ import Toast from "react-native-toast-message";
 
 const Categories = () => {
     const [search, setSearch] = React.useState("");
-    let width = Dimensions.get('screen').width / 2 - 32
+    let width = Dimensions.get('screen').width
 
     const [categories, setCategories] = React.useState<CategoryType[]>([]);
     useEffect(() => {
@@ -48,7 +48,7 @@ const Categories = () => {
                                     ("/(tabs)/categories/disease" as Href))
                         }}
                         style={{
-                            width: width, height: width, margin: 8, flex: 0
+                            width: (width - 32) / 2 - 8, height: (width - 32) / 2 - 8, margin: 8, flex: 0
                         }}
                     />
                 )}

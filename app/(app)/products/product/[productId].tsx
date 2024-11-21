@@ -57,7 +57,6 @@ const Product = () => {
         <ThemeView
             style={{
                 position: "relative",
-                padding: 0,
             }}
         >
             {/* // Header ------------------- */}
@@ -66,8 +65,7 @@ const Product = () => {
                     justifyContent: "space-between",
                     backgroundColor: background,
                     paddingVertical: 8,
-                    paddingHorizontal: 32,
-                    marginHorizontal: -16,
+                    marginHorizontal: 8,
                     alignItems: "center",
                 }}
             >
@@ -117,6 +115,7 @@ const Product = () => {
                     marginBottom: 70,
                     width: "100%",
                 }}
+                showsVerticalScrollIndicator={false}
             >
                 <ImageViewer
                     ref={imageRef}

@@ -13,7 +13,7 @@ const Categories = () => {
     const { categoryId } = useLocalSearchParams<{
         categoryId: string;
     }>();
-    let width = Dimensions.get('screen').width/2 - 32
+    let width = Dimensions.get('screen').width
 
     const [category, setCategory] = React.useState<CategoryType>();
     const [breadCrumbs, setBreadCrumbs] = React.useState<string[]>([]);
@@ -67,7 +67,7 @@ const Categories = () => {
                             );
                         }}
                         style={{
-                            width:width, height:width, margin: 8, flex: 0
+                            width:(width - 16)/2 - 16, height:(width - 16)/2 - 16, margin: 8, flex: 0
                         }}
                     />
                 )}
