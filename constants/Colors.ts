@@ -15,10 +15,12 @@ export const Colors = {
 
     link: '#1A51A2',
     primary: '#1A51A2',
+    primaryLight: '#f5f8ff',
     secondary: '#FD6E87',
     danger: '#C62E2E',
 
     red: '#ff4d4f',
+    redLight: '#ff7376',
     white: '#fff',
   },
   dark: {
@@ -30,10 +32,12 @@ export const Colors = {
 
     link: '#FF885B',
     primary: '#FF885B',
+    primaryLight: '#f5f8ff',
     secondary: '#FD6E87',
     danger: '#C62E2E',
 
     red: '#ff4d4f',
+    redLight: '#ff7376',
     white: '#fff',
   },
 

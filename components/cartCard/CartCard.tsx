@@ -17,16 +17,18 @@ import { convertPrice } from "@/utils/convertPrice";
 interface CartCardProps {
     onPress?: () => void;
     cartQuantity: number;
-    cartQuantityChange: (value: number) => void;
+    cartQuantityChange?: (value: number) => void;
 
     productName: string;
     cartPrice: number;
     productImage: string;
-    isChecked: boolean;
+    isChecked?: boolean;
     checkedChange?: (value: boolean) => void;
 
     style?: ViewStyle;
     imageStyle?: ImageStyle;
+
+    type?: "normal" | "small";
 }
 
 const CartCard = ({
@@ -40,7 +42,93 @@ const CartCard = ({
     imageStyle,
     isChecked,
     checkedChange,
+    type = "normal",
 }: CartCardProps) => {
+
+    if (type === "small") {
+        return (
+            <TouchableOpacity
+                onPress={onPress}
+                style={{
+                    flex: 1,
+                    backgroundColor: useThemeColor({}, "background"),
+                    borderRadius: 8,
+
+                    shadowColor: "#000",
+                    shadowOffset: {
+                        width: 0,
+                        height: 2,
+                    },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 3.84,
+
+                    elevation: 4,
+                    ...style,
+                }}
+            >
+                <Row justifyContent="flex-start">
+                    <Image
+                        source={{
+                            uri:
+                                productImage === ""
+                                    ? "https://anhanime.me/wp-content/uploads/2024/03/anh-nezuko_19.jpg"
+                                    : productImage,
+                        }}
+                        style={{
+                            width: 100,
+                            height: 100,
+                            borderTopLeftRadius: 8,
+                            borderBottomLeftRadius: 8,
+                            objectFit: "contain",
+                            ...imageStyle,
+                        }}
+                    />
+                    <View
+                        style={{
+                            flex: 1,
+                            paddingLeft: 16,
+                            paddingRight: 8,
+                            paddingTop: 8,
+                            paddingBottom: 8,
+                            flexDirection: "column",
+                            justifyContent: "space-between",
+                            height: "100%",
+                        }}
+                    >
+                        <ThemeText
+                            text={productName}
+                            numOfLines={4}
+                            type="medium"
+                            ellipsizeMode="tail"
+                            style={{
+                                fontWeight: "400",
+                                flex: 1
+                            }}
+                        />
+                        <Row justifyContent="space-between">
+                            <Row>
+                                <ThemeText text={`${convertPrice(cartPrice)}`} type="medium" style={{
+                                    fontWeight: "bold",
+                                }} />
+                                <ThemeText text=" vnd" type="small" style={{
+                                    fontWeight: "bold",
+                                }} />
+                            </Row>
+                            <Row>
+                                <ThemeText text={`${cartQuantity}`} type="medium" style={{
+                                    fontWeight: "bold",
+                                }} />
+                                <ThemeText text=" items" type="small" style={{
+                                    fontWeight: "medium",
+                                }} />
+                            </Row>
+                        </Row>
+                    </View>
+                </Row>
+            </TouchableOpacity>
+        )
+    }
+
     return (
         <TouchableOpacity
             onPress={onPress}
@@ -92,7 +180,7 @@ const CartCard = ({
                             }}
                         />
                         <CheckBox
-                            isChecked={isChecked}
+                            isChecked={isChecked ?? false}
                             checkedChange={checkedChange}
                         />
                     </Row>
@@ -100,10 +188,10 @@ const CartCard = ({
                         <Row>
                             <ThemeText text={`${convertPrice(cartPrice)}`} type="medium" style={{
                                 fontWeight: "bold",
-                            }}/>
+                            }} />
                             <ThemeText text=" vnd" type="small" style={{
                                 fontWeight: "bold",
-                            }}/>
+                            }} />
                         </Row>
                         <Row>
                             <TouchableOpacity
@@ -113,7 +201,7 @@ const CartCard = ({
                                     backgroundColor: useThemeColor({}, 'primary'),
                                 }}
                                 onPress={() => {
-                                    cartQuantityChange(cartQuantity - 1);
+                                    cartQuantityChange?.(cartQuantity - 1);
                                 }}
                             >
                                 <Minus size={16} color={useThemeColor({}, 'white')} />
@@ -128,7 +216,7 @@ const CartCard = ({
                                     backgroundColor: useThemeColor({}, 'primary'),
                                 }}
                                 onPress={() => {
-                                    cartQuantityChange(cartQuantity + 1);
+                                    cartQuantityChange?.(cartQuantity + 1);
                                 }}
                             >
                                 <Add size={16} color={useThemeColor({}, 'white')} />

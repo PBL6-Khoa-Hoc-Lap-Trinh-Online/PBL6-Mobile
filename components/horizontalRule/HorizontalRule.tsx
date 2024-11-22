@@ -7,9 +7,47 @@ import ThemeText from "../themeText/ThemeText";
 interface HorizontalRuleProps {
     text?: string;
     style?: ViewStyle;
+
+    type?: "normal" | "small";
 }
 
-const HorizontalRule = ({ text, style }: HorizontalRuleProps) => {
+const HorizontalRule = ({ text, style, type = 'small' }: HorizontalRuleProps) => {
+    if (type === 'normal')
+        return (
+            <View
+                style={[
+                    {
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: "100%",
+                    },
+                    style,
+                ]}
+            >
+                <View
+                    style={{
+                        backgroundColor: useThemeColor({}, "text"),
+                        height: 0.4,
+                        flex: 1,
+                    }}
+                />
+                <Space size={{ width: 8, height: 0 }} />
+                {text && <ThemeText text={text} type="medium" style={{
+                    fontWeight: '500'
+                }}/>}
+                <Space size={{ width: 8, height: 0 }} />
+                <View
+                    style={{
+                        backgroundColor: useThemeColor({}, "text"),
+                        height: 0.4,
+                        flex: 1,
+                    }}
+                />
+            </View>
+        )
+
     return (
         <View
             style={[
@@ -26,7 +64,7 @@ const HorizontalRule = ({ text, style }: HorizontalRuleProps) => {
             <View
                 style={{
                     backgroundColor: useThemeColor({}, "text"),
-                    height: 0.5,
+                    height: 0.4,
                     flex: 1,
                 }}
             />
@@ -36,7 +74,7 @@ const HorizontalRule = ({ text, style }: HorizontalRuleProps) => {
             <View
                 style={{
                     backgroundColor: useThemeColor({}, "text"),
-                    height: 0.5,
+                    height: 0.4,
                     flex: 1,
                 }}
             />

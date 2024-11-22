@@ -30,8 +30,8 @@ const _layout = () => {
                                 {},
                                 "background"
                             ),
-                            paddingHorizontal: 16,
-                            paddingTop: 16,
+                            paddingHorizontal: 8,
+                            paddingVertical: 8,
                         }}
                     >
                         <Button

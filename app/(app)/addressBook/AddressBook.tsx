@@ -19,7 +19,8 @@ import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
 import { AddSquare, Back, Edit, Trash } from "iconsax-react-native";
 import React, { useEffect, useMemo, useRef } from "react";
-import { TextInput, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
 
 const AddressBook = () => {
@@ -106,7 +107,7 @@ const AddressBook = () => {
     ) => {
         handleSelectProvince(receiverProvince);
         handleSelectDistrict(receiverDistrict);
-        
+
         setReceiverAddressIdSelected(receiverAddressId);
         setReceiverNameSelected(receiverName);
         setReceiverPhoneSelected(receiverPhone);
@@ -228,7 +229,7 @@ const AddressBook = () => {
                     justifyContent: "space-between",
                     backgroundColor: useThemeColor({}, "background"),
                     paddingVertical: 8,
-                    paddingHorizontal: 16,
+                    paddingHorizontal: 8,
                 }}
             >
                 <Button
@@ -250,57 +251,62 @@ const AddressBook = () => {
 
             <ThemeView
             >
-                {addressList.map((address, index) => {
-                    return (
-                        <View
-                            key={index}
-                            style={{
-                                padding: 16,
-                                borderColor: border,
-                                borderWidth: 1,
-                                borderRadius: 8,
-                                marginBottom: 8,
-                            }}
-                        >
-                            <Row justifyContent="space-between">
+                <ScrollView style={{
+                    paddingHorizontal: 8
+                }}>
+                    {addressList.map((address, index) => {
+                        return (
+                            <View
+                                key={index}
+                                style={{
+                                    padding: 16,
+                                    borderColor: border,
+                                    borderWidth: 1,
+                                    borderRadius: 8,
+                                    marginBottom: 8,
+                                }}
+                            >
+                                <Row justifyContent="space-between">
+                                    <ThemeText
+                                        type="medium"
+                                        style={{
+                                            fontWeight: "bold",
+                                        }}
+                                        text={address.receiver_name}
+                                    />
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            handleOpenBottomSheetUpdate(
+                                                address.receiver_name,
+                                                address.receiver_phone,
+                                                address.receiver_address,
+                                                address.province_id.toString(),
+                                                address.district_id.toString(),
+                                                address.ward_id.toString(),
+                                                address.receiver_address_id,
+                                            );
+                                        }}
+                                    >
+                                        <Edit size={20} color={primary} />
+                                    </TouchableOpacity>
+                                </Row>
+                                <Space size={{ height: 8, width: 0 }} />
                                 <ThemeText
+                                    text={address.receiver_phone}
                                     type="medium"
-                                    style={{
-                                        fontWeight: "bold",
-                                    }}
-                                    text={address.receiver_name}
+                                    style={{}}
                                 />
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        handleOpenBottomSheetUpdate(
-                                            address.receiver_name,
-                                            address.receiver_phone,
-                                            address.receiver_address,
-                                            address.province_id.toString(),
-                                            address.district_id.toString(),
-                                            address.ward_id.toString(),
-                                            address.receiver_address_id,
-                                        );
-                                    }}
-                                >
-                                    <Edit size={20} color={primary} />
-                                </TouchableOpacity>
-                            </Row>
-                            <Space size={{ height: 8, width: 0 }} />
-                            <ThemeText
-                                text={address.receiver_phone}
-                                type="medium"
-                                style={{}}
-                            />
-                            <Space size={{ height: 8, width: 0 }} />
-                            <ThemeText
-                                text={`${address.receiver_address}, ${address.ward_name}, ${address.district_name}, ${address.province_name}`}
-                                type="medium"
-                                style={{}}
-                            />
-                        </View>
-                    );
-                })}
+                                <Space size={{ height: 8, width: 0 }} />
+                                <ThemeText
+                                    text={`${address.receiver_address}, ${address.ward_name}, ${address.district_name}, ${address.province_name}`}
+                                    type="medium"
+                                    style={{}}
+                                />
+                            </View>
+                        );
+                    })}
+                    <Space size={{ height: 64, width: 0 }} />
+                </ScrollView>
 
                 <Space size={{ height: 32, width: 0 }} />
                 <View
@@ -594,9 +600,8 @@ const AddressBook = () => {
                     <TouchableOpacity
                         style={{
                             marginHorizontal: 16,
-                            borderColor: useThemeColor({}, "red"),
-                            borderWidth: 1,
                             borderRadius: 8,
+                            backgroundColor: useThemeColor({}, 'itemBackground')
                         }}
                         onPress={async () => {
                             // call api to delete address
@@ -610,10 +615,9 @@ const AddressBook = () => {
                                     text1: "Delete address successfully",
                                     type: 'success',
                                 });
-                            } catch (error) {
-                                console.log(error);
+                            } catch (error: any) {
                                 Toast.show({
-                                    text1: "Delete address failed",
+                                    text1: `${error.messages}`,
                                     type: 'error',
                                 });
                             }

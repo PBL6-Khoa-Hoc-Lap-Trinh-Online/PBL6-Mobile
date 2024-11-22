@@ -107,8 +107,8 @@ const PersonalInfomation = () => {
                 style={{
                     justifyContent: "space-between",
                     backgroundColor: useThemeColor({}, "background"),
-                    paddingVertical: 8,
-                    paddingHorizontal: 16,
+                    paddingTop: 8,
+                    paddingHorizontal: 8,
                 }}
             >
                 <Button

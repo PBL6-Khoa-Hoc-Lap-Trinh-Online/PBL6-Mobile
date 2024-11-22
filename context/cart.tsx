@@ -10,6 +10,7 @@ import { useAuth } from "./auth";
 
 interface CartContextType {
     cartItems: CartItem[];
+    reloadData: () => void;
     updateProductInCart: (
         productId: number,
         cartQuantity: number
@@ -26,11 +27,13 @@ export const CartContext = createContext<CartContextType>({
     addProductToCart: async () => {},
     updateProductInCart: async () => {},
     removeProductFromCart: async () => {},
+    reloadData: () => {},
 });
 
 export function CartProvider({ children }: PropsWithChildren) {
     const { user } = useAuth();
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
+    const [reload, setReload] = useState(false);
     useEffect(() => {
         (async () => {
             const _cartItems = await getCartApi();
@@ -41,12 +44,15 @@ export function CartProvider({ children }: PropsWithChildren) {
                 setCartItems([]);
             }
         })();
-    }, [user]);
+    }, [user, reload]);
 
     return (
         <CartContext.Provider
             value={{
                 cartItems,
+                reloadData: () => {
+                    setReload(!reload);
+                },
                 addProductToCart: async (
                     productId: number,
                     cartQuantity: number

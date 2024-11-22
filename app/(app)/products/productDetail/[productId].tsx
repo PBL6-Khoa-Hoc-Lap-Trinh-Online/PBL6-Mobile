@@ -41,7 +41,6 @@ const Product = () => {
         <ThemeView
             style={{
                 position: "relative",
-                padding: 0,
             }}
         >
             {/* // Header ------------------- */}
@@ -49,11 +48,10 @@ const Product = () => {
                 style={{
                     justifyContent: "space-between",
                     backgroundColor: useThemeColor({}, "background"),
-                    paddingTop: 8,
-                    paddingHorizontal: 32,
-                    marginHorizontal: -16,
+                    paddingVertical: 8,
+                    marginHorizontal: 8,
                     alignItems: "center",
-                    width: "100%",
+
                 }}
             >
                 <Button

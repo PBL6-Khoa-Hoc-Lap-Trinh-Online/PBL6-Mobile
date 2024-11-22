@@ -1,6 +1,8 @@
 import { getProductByIdApi } from "@/apis/product";
 import Badge from "@/components/badge/Badge";
 import Button from "@/components/button/Button";
+import CartCard from "@/components/cartCard/CartCard";
+import HorizontalRule from "@/components/horizontalRule/HorizontalRule";
 import Row from "@/components/row/Row";
 import SearchBox from "@/components/searchBox/SearchBox";
 import Space from "@/components/space/Space";
@@ -11,10 +13,11 @@ import { CartContext } from "@/context/cart";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { ProductType } from "@/type/productType";
 import { convertPrice } from "@/utils/convertPrice";
+import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { Href, router, useLocalSearchParams } from "expo-router";
-import { Back, Notification, ShoppingCart, WalletMoney } from "iconsax-react-native";
-import React, { useContext, useEffect, useRef } from "react";
-import { Dimensions, Image, View } from "react-native";
+import { Add, Back, Minus, Notification, ShoppingCart, WalletMoney } from "iconsax-react-native";
+import React, { useContext, useEffect, useMemo, useRef } from "react";
+import { Dimensions, Image, TouchableOpacity, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { ImageViewer, ImageWrapper } from "react-native-reanimated-viewer";
 import Toast from "react-native-toast-message";
@@ -34,6 +37,13 @@ const Product = () => {
 
     const [product, setProduct] = React.useState<ProductType>();
 
+    const snapPoints = useMemo(() => ["50%"], []);
+    const bottomSheetRef = useRef<BottomSheet>(null);
+    const handleOpenBottomSheet = async () => {
+        setProductQuantity(1);
+        bottomSheetRef.current?.snapToIndex(1);
+    };
+
     useEffect(() => {
         (async () => {
             try {
@@ -50,6 +60,7 @@ const Product = () => {
         })();
     }, [productId]);
     const [search, setSearch] = React.useState("");
+    const [productQuantity, setProductQuantity] = React.useState(1);
 
     const imageRef = useRef(null);
 
@@ -254,7 +265,7 @@ const Product = () => {
                 >
                     <Row justifyContent="space-between">
                         <ThemeText type="title" text="Description" />
-                        <ThemeText type="link" text="View more" 
+                        <ThemeText type="link" text="View more"
                             onPress={() => {
                                 router.navigate(
                                     `/(app)/products/productDetail/${product?.product_id}` as Href
@@ -454,7 +465,9 @@ const Product = () => {
                             <Button
                                 color="primary"
                                 text="Buy now"
-                                onPress={() => { }}
+                                onPress={() => {
+                                    handleOpenBottomSheet();
+                                }}
                                 style={{
                                     paddingVertical: 12,
                                     flex: 1,
@@ -496,6 +509,110 @@ const Product = () => {
                     </Row>
                 )
             }
+
+            {/* // BottomSheet  */}
+            <BottomSheet
+                ref={bottomSheetRef}
+                snapPoints={snapPoints}
+                enablePanDownToClose={true}
+                index={-1}
+                backgroundStyle={{
+                    borderColor: useThemeColor({}, "border"),
+                    borderWidth: 1,
+                }}
+            >
+                <BottomSheetScrollView
+                    style={{
+                        backgroundColor: useThemeColor({}, "background"),
+                        borderTopLeftRadius: 16,
+                        borderTopRightRadius: 16,
+                        paddingHorizontal: 8,
+                    }}
+                >
+                    <View style={{
+                        padding: 8,
+                    }}>
+                        <CartCard
+                            type="small"
+                            productImage={product?.product_images?.[0] ?? ""}
+                            productName={product?.product_name ?? ""}
+                            cartPrice={Number(product?.product_price) ?? 0}
+                            cartQuantity={productQuantity ?? 1}
+                        />
+                        <Space size={{ height: 16, width: 0 }} />
+                    </View>
+                    <HorizontalRule text="Choose quantity" type="normal" />
+                    <Space size={{ height: 16, width: 0 }} />
+                    <Row justifyContent="space-between" style={{
+                        paddingHorizontal: 16
+                    }}>
+                        <View>
+                            <ThemeText text='Total' type='medium' style={{
+                                textAlign: 'right',
+                                fontWeight: 'bold',
+                            }} />
+                            <Row>
+                                <ThemeText text={
+                                    `${convertPrice(Number.parseFloat(product?.product_price ?? "0") * productQuantity)}`
+                                } type='medium'
+                                    style={{
+                                        fontWeight: 'bold',
+                                        fontSize: 24,
+                                        lineHeight: 24,
+                                    }}
+                                />
+                                <Space size={{ height: 0, width: 8 }} />
+                                <ThemeText text='VND' type='small' />
+                            </Row>
+                        </View>
+                        <Row>
+                            <TouchableOpacity
+                                style={{
+                                    padding: 8,
+                                    borderRadius: 4,
+                                    backgroundColor: useThemeColor({}, 'primary'),
+                                }}
+                                onPress={() => {
+                                    setProductQuantity(productQuantity - 1);
+                                }}
+                            >
+                                <Minus size={16} color={useThemeColor({}, 'white')} />
+                            </TouchableOpacity>
+                            <Space size={{ width: 12, height: 0 }} />
+                            <ThemeText text={`${productQuantity}`} type="medium" />
+                            <Space size={{ width: 12, height: 0 }} />
+                            <TouchableOpacity
+                                style={{
+                                    padding: 8,
+                                    borderRadius: 4,
+                                    backgroundColor: useThemeColor({}, 'primary'),
+                                }}
+                                onPress={() => {
+                                    setProductQuantity(productQuantity + 1);
+                                }}
+                            >
+                                <Add size={16} color={useThemeColor({}, 'white')} />
+                            </TouchableOpacity>
+                        </Row>
+                    </Row>
+                    <Space size={{ height: 32, width: 0 }} />
+                    <ThemeView>
+                        <Button
+                            color="primary"
+                            text="Buy now"
+                            onPress={() => {
+                                router.navigate(
+                                    `/(app)/checkout/checkout/` + JSON.stringify({
+                                        product_id: product?.product_id,
+                                        quantity: productQuantity,
+                                    }) as Href
+                                )
+                            }}
+                        />
+                    </ThemeView>
+                </BottomSheetScrollView>
+            </BottomSheet>
+            {/* // BottomSheet  */}
         </ThemeView>
     );
 };
