@@ -1,7 +1,8 @@
 import { getAllCategoriesApi } from "@/apis/category";
-import CategoryCard from "@/components/categoryCard/CategoryCard";
+import CategoryCard from "@/components/card/categoryCard/CategoryCard";
 import ThemeView from "@/components/themeView/ThemeView";
 import { CategoryType } from "@/type/categoryType";
+import { isTablet } from "@/utils/isTablet";
 import { Href, router } from "expo-router";
 import React, { useEffect } from "react";
 import { Dimensions } from "react-native";
@@ -9,8 +10,7 @@ import { FlatList } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
 
 const Categories = () => {
-    const [search, setSearch] = React.useState("");
-    let width = Dimensions.get('screen').width
+    let width = Dimensions.get('screen').width - 16;
 
     const [categories, setCategories] = React.useState<CategoryType[]>([]);
     useEffect(() => {
@@ -31,7 +31,7 @@ const Categories = () => {
         <ThemeView>
             <FlatList
                 data={categories}
-                columnWrapperStyle={{ justifyContent: 'space-between', alignItems: 'flex-start' }}
+                columnWrapperStyle={{ justifyContent: 'flex-start', alignItems: 'flex-start' }}
                 renderItem={({ item }) => (
                     <CategoryCard
                         key={item.category_id}
@@ -48,12 +48,13 @@ const Categories = () => {
                                     ("/(tabs)/categories/disease" as Href))
                         }}
                         style={{
-                            width: (width - 32) / 2 - 8, height: (width - 32) / 2 - 8, margin: 8, flex: 0
+                            width: isTablet() ? width / 3 - 24 : width / 2 - 16, 
+                            margin: 8, flex: 0
                         }}
                     />
                 )}
                 keyExtractor={(item) => item.category_id.toString()}
-                numColumns={2}
+                numColumns={3}
             />
         </ThemeView>
     );

@@ -1,17 +1,21 @@
-import { Tabs } from "expo-router";
+import { Href, router, Tabs } from "expo-router";
 import React from "react";
 
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { Category2, Home2, Notepad2, User } from "iconsax-react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { Category2, Home2, Notepad2, User } from "iconsax-react-native";
+import Toast from "react-native-toast-message";
+import { useAuth } from "@/context/auth";
 
 export default function TabLayout() {
-    const colorScheme = useColorScheme();
-
+    const { user } = useAuth()
     return (
         <Tabs
             screenOptions={{
                 headerShown: false,
+                tabBarStyle: {
+                    backgroundColor: useThemeColor({}, "background"),
+                    borderTopWidth: 0,
+                }
             }}
         >
             <Tabs.Screen
@@ -26,6 +30,12 @@ export default function TabLayout() {
                     },
                     tabBarActiveTintColor: useThemeColor({}, 'primary'),
                 }}
+                listeners={{
+                    tabPress: (e) => {
+                        e.preventDefault()
+                        router.push("/(app)/(tabs)/" as Href)
+                    },
+                }}
             />
             <Tabs.Screen
                 name="categories"
@@ -39,6 +49,12 @@ export default function TabLayout() {
                     },
                     tabBarActiveTintColor: useThemeColor({}, 'primary'),
                 }}
+                listeners={{
+                    tabPress: (e) => {
+                        e.preventDefault()
+                        router.push("/(tabs)/categories" as Href)
+                    },
+                }}
             />
             <Tabs.Screen
                 name="orders"
@@ -50,7 +66,24 @@ export default function TabLayout() {
                         }
                         return <Notepad2 color={color} size={20} />;
                     },
-                    tabBarActiveTintColor: useThemeColor({}, 'primary'),
+                }}
+                listeners={{
+                    tabPress: (e) => {
+                        e.preventDefault()
+                        if (!user) {
+                            Toast.show({
+                                type: "error",
+                                text1: "You need to login to view your orders",
+                                position: 'bottom',
+                                onPress: () => {
+                                    router.push("/(auth)/signIn" as Href)
+                                },
+                                bottomOffset: 60,
+                            })
+                            return
+                        }
+                        router.push("/(app)/(tabs)/orders" as Href)
+                    },
                 }}
             />
             <Tabs.Screen
@@ -63,7 +96,24 @@ export default function TabLayout() {
                         }
                         return <User color={color} size={20} />;
                     },
-                    tabBarActiveTintColor: useThemeColor({}, 'primary'),
+                }}
+                listeners={{
+                    tabPress: (e) => {
+                        e.preventDefault()
+                        if (!user) {
+                            Toast.show({
+                                type: "error",
+                                text1: "You need to login to view your orders",
+                                position: 'bottom',
+                                onPress: () => {
+                                    router.push("/(auth)/signIn" as Href)
+                                },
+                                bottomOffset: 60
+                            })
+                            return
+                        }
+                        router.push("/(app)/(tabs)/orders" as Href)
+                    },
                 }}
             />
         </Tabs>

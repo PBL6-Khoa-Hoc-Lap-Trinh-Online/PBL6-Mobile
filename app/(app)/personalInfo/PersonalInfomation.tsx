@@ -9,7 +9,7 @@ import ThemeText from "@/components/themeText/ThemeText";
 import ThemeView from "@/components/themeView/ThemeView";
 import { useAuth } from "@/context/auth";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import * as ImagePicker from "expo-image-picker";
+import { GetImageFromLibrary } from "@/utils/uploadImage";
 import { router } from "expo-router";
 import { ArrowRotateLeft, Back, Calendar2 } from "iconsax-react-native";
 import React, { useEffect } from "react";
@@ -36,6 +36,7 @@ const PersonalInfomation = () => {
     }, []);
 
     const [isLoading, setIsLoading] = React.useState(false);
+    const [isChangeAvatarLoading, setIsChangeAvatarLoading] = React.useState(false);
 
     const [fullName, setFullName] = React.useState("");
     const [email, setEmail] = React.useState("");
@@ -46,29 +47,28 @@ const PersonalInfomation = () => {
 
     // function
     const handleUpdateAvatar = async () => {
-        // No permissions request is necessary for launching the image library
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 1,
-        });
-
-        if (!result.canceled) {
-            // setImage(result.assets[0].uri);
-            setAvatar(result.assets[0].uri);
-            try {
-                setIsLoading(true);
-                await updateProfileImageCurrentUser(
-                    email,
-                    fullName,
-                    result.assets[0]
-                )
-                refreshUser();
-                setIsLoading(false);
-            } catch (error) {
-                console.log(error);
-            }
+        const rs = await GetImageFromLibrary()
+        setIsChangeAvatarLoading(true)
+        if (rs) {
+            await updateProfileImageCurrentUser(
+                email,
+                fullName,
+                rs
+            )
+            Toast.show({
+                text1: "Success",
+                text2: "Update avatar successfully",
+                type: "success",
+            })
+            setAvatar(rs)
+            setIsChangeAvatarLoading(false)
+        } else {
+            Toast.show({
+                text1: "Warning",
+                text2: "Can not update avatar",
+                type: "error",
+            });
+            setIsChangeAvatarLoading(false)
         }
     };
 
@@ -145,7 +145,7 @@ const PersonalInfomation = () => {
                         }}
                     >
                         <Row>
-                            <Avatar avatarUrl={avatar} size={82} />
+                            <Avatar avatarUrl={avatar} size={82} loading={isChangeAvatarLoading}/>
                         </Row>
                         <Space size={{ height: 8, width: 0 }} />
                         <Row>

@@ -39,7 +39,9 @@ const Select = ({
     const itemBackground = useThemeColor({}, "itemBackground");
 
     return (
-        <View>
+        <View
+            testID="select"
+        >
             {label && (
                 <Text
                     style={{

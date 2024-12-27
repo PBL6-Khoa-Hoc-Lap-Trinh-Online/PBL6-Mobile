@@ -11,7 +11,7 @@ const Tag = ({
     type
 }: TagProps) => {
     return (
-        <View style={{
+        <View testID="tag" style={{
             backgroundColor: type === "primary" ? useThemeColor({}, "primaryLight") :
                 useThemeColor({}, "secondary"),
             padding: 8,

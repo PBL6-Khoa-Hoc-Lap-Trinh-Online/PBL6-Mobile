@@ -1,3 +1,4 @@
+import Header from '@/components/header/Header';
 import ThemeView from '@/components/themeView/ThemeView';
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
@@ -9,6 +10,7 @@ const Payment = () => {
   }>();
   return (
     <ThemeView>
+      <Header title="Payment" type='secondary'/>
       <WebView
         style={{
           flex: 1

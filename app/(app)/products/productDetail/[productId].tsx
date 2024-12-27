@@ -46,12 +46,9 @@ const Product = () => {
             {/* // Header ------------------- */}
             <Row
                 style={{
-                    justifyContent: "space-between",
+                    justifyContent: "flex-start",
                     backgroundColor: useThemeColor({}, "background"),
-                    paddingVertical: 8,
-                    marginHorizontal: 8,
                     alignItems: "center",
-
                 }}
             >
                 <Button
@@ -61,7 +58,11 @@ const Product = () => {
                         router.back();
                     }}
                 />
-                <ThemeText text={product?.product_name} type="title" ellipsizeMode="tail" numOfLines={1} />
+                <ThemeText text={product?.product_name} type="title" ellipsizeMode="tail" numOfLines={1} 
+                    style={{
+                        width: screenWidth - 48
+                    }}
+                />
             </Row>
             {/* // Header ------------------- */}
             <ScrollView>

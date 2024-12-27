@@ -1,5 +1,5 @@
 import Button from "@/components/button/Button";
-import CartCard from "@/components/cartCard/CartCard";
+import CartCard from "@/components/card/cartCard/CartCard";
 import CheckBox from "@/components/checkBox/CheckBox";
 import Row from "@/components/row/Row";
 import Space from "@/components/space/Space";
@@ -74,7 +74,7 @@ const Card = () => {
             <ThemeView style={{}}>
                 <FlatList
                     data={cartItems}
-                    renderItem={({ item }) => (
+                    renderItem={({ item, index }) => (
                         <CartCard
                             onPress={() => {
                                 router.navigate(
@@ -95,7 +95,7 @@ const Card = () => {
                                     });
                                 }
                             }}
-                            key={item.product_id}
+                            key={index}
                             productImage={item.product_images?.[0] ?? ""}
                             productName={item.product_name}
                             cartPrice={Number.parseFloat(item.cart_price)}
@@ -128,6 +128,7 @@ const Card = () => {
                         borderRadius: 8,
                         padding: 16,
                         backgroundColor: useThemeColor({}, "itemBackground"),
+                        marginBottom: 16,
                     }}
                 >
                     <CheckBox
@@ -147,7 +148,7 @@ const Card = () => {
                         }}
                     />
                     <Row style={{
-                        paddingHorizontal: -8
+                        paddingHorizontal: -8,
                     }}>
                         <View
                             style={{

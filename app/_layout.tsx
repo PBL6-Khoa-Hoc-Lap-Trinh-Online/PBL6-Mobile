@@ -50,7 +50,7 @@ export default function RootLayout() {
                         }
                     >
                         <StatusBar
-                            style="auto"
+                            style="dark"
                             backgroundColor={backgroundColorTheme}
                         />
                         <Slot />

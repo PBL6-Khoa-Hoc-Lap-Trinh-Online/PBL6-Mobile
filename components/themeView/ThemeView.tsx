@@ -13,6 +13,7 @@ const ThemeView = (props: ThemeViewProps) => {
     const backgroundTheme = useThemeColor({}, "background");
     return (
         <View
+            testID="themeView"
             style={{
                 backgroundColor: backgroundTheme,
                 flex: 1,

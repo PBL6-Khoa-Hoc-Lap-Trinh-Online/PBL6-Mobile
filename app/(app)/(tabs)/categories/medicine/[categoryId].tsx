@@ -1,9 +1,10 @@
 import { getCategoryByIdApi } from "@/apis/category";
 import BreadCrumb from "@/components/breadCrumb/BreadCrumb";
-import CategoryCard from "@/components/categoryCard/CategoryCard";
+import CategoryCard from "@/components/card/categoryCard/CategoryCard";
 import Space from "@/components/space/Space";
 import ThemeView from "@/components/themeView/ThemeView";
 import { CategoryType } from "@/type/categoryType";
+import { isTablet } from "@/utils/isTablet";
 import { Href, router, useLocalSearchParams } from "expo-router";
 import React, { useEffect } from "react";
 import { Dimensions, FlatList } from "react-native";
@@ -13,7 +14,7 @@ const Categories = () => {
     const { categoryId } = useLocalSearchParams<{
         categoryId: string;
     }>();
-    let width = Dimensions.get('screen').width
+    let width = Dimensions.get('screen').width - 16
 
     const [category, setCategory] = React.useState<CategoryType>();
     const [breadCrumbs, setBreadCrumbs] = React.useState<string[]>([]);
@@ -49,10 +50,12 @@ const Categories = () => {
     return (
         <ThemeView>
             <BreadCrumb breadCrumbs={breadCrumbs} />
-            <Space size={{ height: 12, width: 0 }} />
+            <Space size={{ height: isTablet() ? 16 : 8, width: 0 }} />
             <FlatList
                 data={category?.children}
-                columnWrapperStyle={{justifyContent:'space-between', alignItems: 'flex-start'}}
+                columnWrapperStyle={{
+                    justifyContent: 'flex-start', alignItems: 'flex-start',
+                }}
                 renderItem={({ item }) => (
                     <CategoryCard
                         key={item.category_id}
@@ -67,7 +70,9 @@ const Categories = () => {
                             );
                         }}
                         style={{
-                            width:(width - 16)/2 - 16, height:(width - 16)/2 - 16, margin: 8, flex: 0
+                            width: isTablet() ? width / 3 - 24 : width / 2 - 16,
+                            margin: 8,
+                            flex: 0,
                         }}
                     />
                 )}

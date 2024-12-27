@@ -35,6 +35,7 @@ const Button = ({
     if (variant === "circle") {
         return (
             <TouchableOpacity
+                testID="button"
                 disabled={disabled || loading}
                 onPress={onPress}
                 style={{
@@ -55,6 +56,7 @@ const Button = ({
     if (variant === "outline") {
         return (
             <TouchableOpacity
+                testID="button"
                 disabled={disabled || loading}
                 onPress={onPress}
                 style={{
@@ -66,24 +68,28 @@ const Button = ({
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    borderWidth: 1,
+                    borderWidth: 0.5,
                     borderColor: useThemeColor({}, color as any),
                     ...style,
                 }}
             >
                 {iconPosition === 'left' && icon && icon}
-                {iconPosition === 'left' && icon && <Space size={{ width: 8, height: 0 }} />}
-                <Text
-                    numberOfLines={1}
-                    style={{
-                        color: useThemeColor({}, color as any),
-                        fontSize: 14,
-                        ...textStyles,
-                    }}
-                >
-                    {text}
-                </Text>
-                {iconPosition === 'right' && <Space size={{ width: 8, height: 0 }} />}
+                {iconPosition === 'left' && text && icon && <Space size={{ width: 8, height: 0 }} />}
+                {
+                    text && (
+                        <Text
+                            numberOfLines={1}
+                            style={{
+                                color: useThemeColor({}, color as any),
+                                fontSize: 14,
+                                ...textStyles,
+                            }}
+                        >
+                            {text}
+                        </Text>
+                    )
+                }
+                {iconPosition === 'right' && text && <Space size={{ width: 8, height: 0 }} />}
                 {iconPosition === 'right' && icon && icon}
             </TouchableOpacity>
         );
@@ -92,6 +98,7 @@ const Button = ({
     if (variant === "link") {
         return (
             <TouchableOpacity
+                testID="button"
                 disabled={disabled || loading}
                 onPress={onPress}
                 style={{
@@ -107,7 +114,7 @@ const Button = ({
                 }}
             >
                 {iconPosition === 'left' && icon && icon}
-                {iconPosition === 'left' && icon && <Space size={{ width: 8, height: 0 }} />}
+                {iconPosition === 'left' && text && icon && <Space size={{ width: 8, height: 0 }} />}
                 <Text
                     numberOfLines={1}
                     style={{
@@ -119,7 +126,7 @@ const Button = ({
                 >
                     {text}
                 </Text>
-                {iconPosition === 'right' && <Space size={{ width: 8, height: 0 }} />}
+                {iconPosition === 'right' && text && <Space size={{ width: 8, height: 0 }} />}
                 {iconPosition === 'right' && icon && icon}
             </TouchableOpacity>
         )
@@ -128,6 +135,7 @@ const Button = ({
     if (variant === "fill") {
         return (
             <TouchableOpacity
+                testID="button"
                 disabled={disabled || loading}
                 onPress={onPress}
                 style={{
@@ -142,6 +150,7 @@ const Button = ({
             >
                 {loading ? (
                     <LottieView
+                        testID="loading"
                         source={require("@/assets/animation/buttonLoading.json")}
                         autoPlay
                         loop

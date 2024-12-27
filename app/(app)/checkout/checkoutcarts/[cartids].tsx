@@ -2,11 +2,13 @@ import { checkoutCartApi, getDeliveryMethodsApi, getPaymentMethodsApi } from '@/
 import { getAllAddress } from '@/apis/user';
 import Badge from '@/components/badge/Badge';
 import Button from '@/components/button/Button';
-import CartCard from '@/components/cartCard/CartCard';
+import CartCard from '@/components/card/cartCard/CartCard';
 import CheckBox from '@/components/checkBox/CheckBox';
+import Header from '@/components/header/Header';
 import HorizontalRule from '@/components/horizontalRule/HorizontalRule';
 import ItemCheckbox from '@/components/itemCheckbox/ItemCheckbox';
 import Row from '@/components/row/Row';
+import Select from '@/components/select/Select';
 import Space from '@/components/space/Space';
 import ThemeText from '@/components/themeText/ThemeText';
 import ThemeView from '@/components/themeView/ThemeView';
@@ -18,7 +20,7 @@ import { PaymentMethod } from '@/type/paymentType';
 import { convertPrice } from '@/utils/convertPrice';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { Href, router, useLocalSearchParams } from 'expo-router';
-import { Back, ShoppingCart } from 'iconsax-react-native';
+import { Add, Back, ShoppingCart } from 'iconsax-react-native';
 import React, { useContext, useEffect, useMemo, useRef } from 'react';
 import { TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -102,59 +104,31 @@ const CheckoutCard = () => {
     const text = useThemeColor({}, "text");
     const border = useThemeColor({}, "border");
     const itemBackground = useThemeColor({}, "itemBackground");
+    const primary = useThemeColor({}, "primary");
 
     return (
         <ThemeView>
             {/* // Header ------------------- */}
-            <Row
-                style={{
-                    justifyContent: "space-between",
-                    backgroundColor: background,
-                    alignItems: "center",
-                    marginBottom: 8,
-                }}
-            >
-                <Button
-                    variant="circle"
-                    icon={<Back size={20} color={text} />}
-                    onPress={() => {
-                        router.back();
-                    }}
-                />
-                <ThemeText text="Checkout" type="title" />
-
-                <Badge count={cartItems.length}>
-                    <Button
-                        variant="circle"
-                        icon={
-                            <ShoppingCart
-                                size={20}
-                                color={text}
-                            />
-                        }
-                        onPress={() => {
-                            router.navigate("/(app)/cart");
-                        }}
-                    />
-                </Badge>
-            </Row>
+            <Header title='Checkout' type='secondary' />
             <ScrollView scrollEnabled showsVerticalScrollIndicator={false}>
                 {
-                    cartItemsFiltered.map((item) => (
-                        <CartCard
-                            type='small'
-                            key={item.product_id}
-                            productImage={item.product_images?.[0] ?? ""}
-                            productName={item.product_name}
-                            cartPrice={Number.parseFloat(item.cart_price)}
-                            cartQuantity={item.cart_quantity}
-                            style={{
-                                marginBottom: 8,
-                                pointerEvents: "none",
-                                marginHorizontal: 8
-                            }}
-                        />
-                    ))
+                    cartItemsFiltered.map((item, index) => {
+                        return (
+                            <CartCard
+                                type='small'
+                                key={index}
+                                productImage={item.product_images?.[0] ?? ""}
+                                productName={item.product_name}
+                                cartPrice={Number.parseFloat(item.cart_price)}
+                                cartQuantity={item.cart_quantity}
+                                style={{
+                                    marginBottom: 8,
+                                    pointerEvents: "none",
+                                    marginHorizontal: 8
+                                }}
+                            />
+                        )
+                    })
                 }
                 <Space size={{ height: 16, width: 0 }} />
                 <HorizontalRule text='' type='normal' />
@@ -167,7 +141,7 @@ const CheckoutCard = () => {
                     />
                     <Space size={{ height: 16, width: 0 }} />
                     {
-                        selectedAddress && (
+                        selectedAddress ? (
                             <TouchableOpacity
                                 style={{
                                     padding: 16,
@@ -199,6 +173,25 @@ const CheckoutCard = () => {
                                     style={{}}
                                 />
                             </TouchableOpacity>
+                        ) : (
+                            <Row justifyContent='space-between' style={{
+                                padding: 16,
+                                borderRadius: 8,
+                                marginBottom: 8,
+                                backgroundColor: itemBackground,
+                            }}>
+                                <ThemeText text='No address found' type='medium' />
+                                <Space size={{ height: 16, width: 0 }} />
+                                <Button
+                                    variant='link'
+                                    text='Add Address'
+                                    onPress={() => {
+                                        router.navigate(`/(app)/addressBook/AddressBook` as Href);
+                                    }}
+                                    icon={<Add size={20} color={primary} />}
+                                    iconPosition='right'
+                                />
+                            </Row>
                         )
                     }
                 </ThemeView>
@@ -209,25 +202,22 @@ const CheckoutCard = () => {
                         }}
                     />
                     <Space size={{ height: 16, width: 0 }} />
-                    <ItemCheckbox
-                        isChecked={selectedDeliveryMethod?.delivery_method_id === deliveryMethod[0]?.delivery_method_id}
-                        checkedChange={() => {
-                            setSelectedDeliveryMethod(deliveryMethod[0]);
-                        }}
-                        label={deliveryMethod[0]?.delivery_method_name}
-                        delivery_method_description={deliveryMethod[0]?.delivery_method_description}
-                        delivery_fee={convertPrice(Number(deliveryMethod[0]?.delivery_fee))}
-                    />
-                    <Space size={{ height: 8, width: 0 }} />
-                    <ItemCheckbox
-                        isChecked={selectedDeliveryMethod?.delivery_method_id === deliveryMethod[1]?.delivery_method_id}
-                        checkedChange={() => {
-                            setSelectedDeliveryMethod(deliveryMethod[1]);
-                        }}
-                        label={deliveryMethod[1]?.delivery_method_name}
-                        delivery_method_description={deliveryMethod[0]?.delivery_method_description}
-                        delivery_fee={convertPrice(Number(deliveryMethod[1]?.delivery_fee))}
-                    />
+                    {
+                        deliveryMethod.map((item, index) => (
+                            <ItemCheckbox
+                                isChecked={selectedDeliveryMethod?.delivery_method_id === item?.delivery_method_id}
+                                checkedChange={() => {
+                                    setSelectedDeliveryMethod(item);
+                                }}
+                                label={item?.delivery_method_name}
+                                delivery_method_description={item?.delivery_method_description}
+                                delivery_fee={convertPrice(Number(item?.delivery_fee))}
+                                style={{
+                                    marginBottom: index === deliveryMethod.length - 1 ? 0 : 8,
+                                }}
+                            />
+                        ))
+                    }
                 </ThemeView>
                 <Space size={{ height: 16, width: 0 }} />
                 <ThemeView>
@@ -237,30 +227,23 @@ const CheckoutCard = () => {
                         }}
                     />
                     <Space size={{ height: 16, width: 0 }} />
-                    <Row justifyContent='space-between'>
-                        <View style={{
-                            width: (width - 32) / 2 - 4,
-                        }}>
-                            <ItemCheckbox
-                                isChecked={selectedPaymentMethod?.payment_method_id === paymentMethod[0]?.payment_method_id}
-                                checkedChange={() => {
-                                    setSelectedPaymentMethod(paymentMethod[0]);
-                                }}
-                                label={paymentMethod[0]?.payment_method_description.toLocaleUpperCase()}
-                            />
-                        </View>
-                        <View style={{
-                            width: (width - 32) / 2 - 4,
-                        }}>
-                            <ItemCheckbox
-                                isChecked={selectedPaymentMethod?.payment_method_id === paymentMethod[1]?.payment_method_id}
-                                checkedChange={() => {
-                                    setSelectedPaymentMethod(paymentMethod[1]);
-                                }}
-                                label={paymentMethod[1]?.payment_method_description.toLocaleUpperCase()}
-                            />
-                        </View>
-                    </Row>
+                    {
+                        paymentMethod.map((item, index) => {
+                            if (item.payment_method_id === 1) 
+                            return (
+                                <ItemCheckbox
+                                    isChecked={selectedPaymentMethod?.payment_method_id === item?.payment_method_id}
+                                    checkedChange={() => {
+                                        setSelectedPaymentMethod(item);
+                                    }}
+                                    label={item?.payment_method_description.toLocaleUpperCase()}
+                                    style={{
+                                        marginBottom: index === deliveryMethod.length - 1 ? 0 : 8,
+                                    }}
+                                />
+                            )
+                        })
+                    }
                 </ThemeView>
                 <Space size={{ height: 16, width: 0 }} />
                 <ThemeView>
@@ -336,15 +319,36 @@ const CheckoutCard = () => {
                                     })
                                     if (selectedPaymentMethod.payment_method_id === 1) {
                                         router.navigate("/(app)/(tabs)/orders")
+                                        return
                                     }
-                                    if (selectedPaymentMethod.payment_method_id === 2) {
-                                        const checkoutUrl = rs?.data;
-                                        router.replace(
-                                            `/(app)/checkout/payment/${encodeURIComponent(checkoutUrl)}` as Href,
-                                        )
-                                    }
+                                    const checkoutUrl = rs?.data;
+                                    router.replace(
+                                        `/(app)/checkout/payment/${encodeURIComponent(checkoutUrl)}` as Href,
+                                    )
                                 } catch (error) {
                                     console.log(error);
+                                }
+                            } else {
+                                if (!selectedAddress) {
+                                    Toast.show({
+                                        text1: "Error",
+                                        text2: "Please select address",
+                                        type: 'error'
+                                    })
+                                }
+                                if (!selectedDeliveryMethod) {
+                                    Toast.show({
+                                        text1: "Error",
+                                        text2: "Please select delivery method",
+                                        type: 'error'
+                                    })
+                                }
+                                if (!selectedPaymentMethod) {
+                                    Toast.show({
+                                        text1: "Error",
+                                        text2: "Please select payment method",
+                                        type: 'error'
+                                    })
                                 }
                             }
                             setLoading(false);
@@ -361,13 +365,13 @@ const CheckoutCard = () => {
                 enablePanDownToClose={true}
                 index={-1}
                 backgroundStyle={{
-                    borderColor: useThemeColor({}, "border"),
+                    borderColor: border,
                     borderWidth: 1,
                 }}
             >
                 <BottomSheetScrollView
                     style={{
-                        backgroundColor: useThemeColor({}, "background"),
+                        backgroundColor: background,
                         borderTopLeftRadius: 16,
                         borderTopRightRadius: 16,
                         paddingHorizontal: 8,

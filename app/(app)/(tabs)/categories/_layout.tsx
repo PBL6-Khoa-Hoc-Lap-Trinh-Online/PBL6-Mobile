@@ -1,90 +1,51 @@
-import Badge from "@/components/badge/Badge";
-import Button from "@/components/button/Button";
-import Row from "@/components/row/Row";
-import SearchBox from "@/components/searchBox/SearchBox";
-import { CartContext } from "@/context/cart";
+import Header from "@/components/header/Header";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { router, Stack } from "expo-router";
-import {
-    Back,
-    Notification,
-    SearchNormal,
-    ShoppingCart,
-} from "iconsax-react-native";
-import React, { useContext } from "react";
+import { Stack } from "expo-router";
+import React from "react";
+import { View } from "react-native";
 
 const _layout = () => {
-    const {cartItems} = useContext(CartContext)
-
-    const [search, setSearch] = React.useState("");
-    
     return (
         <Stack
             screenOptions={{
                 headerShown: true,
-                header: () => (
-                    <Row
-                        style={{
-                            justifyContent: "space-between",
-                            backgroundColor: useThemeColor(
-                                {},
-                                "background"
-                            ),
-                            paddingHorizontal: 8,
-                            paddingVertical: 8,
-                        }}
-                    >
-                        <Button
-                            variant="circle"
-                            icon={
-                                <Back
-                                    size={20}
-                                    color={useThemeColor({}, "text")}
-                                />
-                            }
-                            onPress={() => {
-                                router.back();
-                            }}
-                        />
-                        <SearchBox
-                            value={search}
-                            onChangeText={setSearch}
-                            placeholder="Search categories"
-                            icon={
-                                <SearchNormal
-                                    size={20}
-                                    color={useThemeColor({}, "text")}
-                                />
-                            }
-                        />
-                        <Button
-                            variant="circle"
-                            icon={
-                                <Notification
-                                    size={20}
-                                    color={useThemeColor({}, "text")}
-                                />
-                            }
-                            onPress={() => {}}
-                        />
-                        <Badge count={cartItems.length}>
-                            <Button
-                                variant="circle"
-                                icon={
-                                    <ShoppingCart
-                                        size={20}
-                                        color={useThemeColor({}, "text")}
-                                    />
-                                }
-                                onPress={() => {
-                                    router.navigate("/(app)/cart");
+                header: (props) => {
+                    if (props.route.name !== "index")
+                    {
+                        console.log(props)
+                        return (
+                            <View style={{
+                                backgroundColor: useThemeColor({}, "background"),
+                                paddingHorizontal: 8,
+                                paddingVertical: 8
+                            }}>
+                                <Header type="secondary" title={props.route.name.split('/')[0].toLocaleUpperCase()} />
+                            </View>
+                        )
+                    }
+                    if (props.route.name === "index")
+                        return (
+                            <View
+                                style={{
+                                    backgroundColor: useThemeColor(
+                                        {},
+                                        "background"
+                                    ),
+                                    paddingHorizontal: 8,
+                                    paddingVertical: 8,
                                 }}
-                            />
-                        </Badge>
-                    </Row>
-                ),
+                            >
+                                <Header type="main" />
+                            </View>
+                        )
+                },
             }}
-        />
+        > 
+            <Stack.Screen name="index" />
+            <Stack.Screen name="disease" />
+            <Stack.Screen name="disease/[categoryId]" />
+            <Stack.Screen name="medicine/[categoryId]" />
+        </Stack>
     );
 };
 

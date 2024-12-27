@@ -9,7 +9,7 @@ import ThemeText from "@/components/themeText/ThemeText";
 import Space from "@/components/space/Space";
 import { router } from "expo-router";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import SettingCard from "@/components/settingCard/SettingCard";
+import SettingCard from "@/components/card/settingCard/SettingCard";
 import {
     ArrowRight2,
     CalendarEdit,
@@ -117,6 +117,7 @@ const Account = () => {
                 }}
                 text="Sign out"
             />
+            <Space size={{ height: 16, width: 0 }} />
         </ThemeView>
     );
 };

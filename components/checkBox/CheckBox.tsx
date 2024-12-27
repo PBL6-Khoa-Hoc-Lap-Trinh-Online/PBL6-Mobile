@@ -22,6 +22,7 @@ const CheckBox = ({
 }: CheckBoxProps) => {
     return (
         <TouchableOpacity
+            testID="checkbox"
             style={{
                 padding: 8,
                 borderRadius: 4,
@@ -33,11 +34,12 @@ const CheckBox = ({
             <Row>
                 {isChecked ? (
                     <TickSquare
+                        testID="checked"
                         size={20}
                         color={useThemeColor({}, "primary")}
                     />
                 ) : (
-                    <Maximize2 size={20} color={useThemeColor({}, "icon")} />
+                    <Maximize2 testID="unCheck" size={20} color={useThemeColor({}, "icon")} />
                 )}
                 {label && (
                     <Space

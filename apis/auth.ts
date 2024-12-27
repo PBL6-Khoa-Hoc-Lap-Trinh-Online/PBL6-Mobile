@@ -17,3 +17,10 @@ export const registerApi = async (fullname: string, email: string, password: str
     })
     return response
 }
+
+export const verifyEmailApi = async (email: string) => {
+    const response = await httpRequests.post("/user/resend-verify-email", {
+        email
+    })
+    return response
+}

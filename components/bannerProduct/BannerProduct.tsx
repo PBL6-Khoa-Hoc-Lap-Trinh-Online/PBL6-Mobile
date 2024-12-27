@@ -13,8 +13,6 @@ interface BannerProductProps {
   titleColor?: string;
   titleStyle?: TextStyle;
   style?: ViewStyle;
-
-  onPress?: () => void;
 }
 const BannerProduct = ({
   title,
@@ -22,14 +20,13 @@ const BannerProduct = ({
   titleColor = useThemeColor({}, 'white'),
   style,
   titleStyle,
-  onPress
 }: BannerProductProps) => {
   return (
     <View
       style={{
         backgroundColor: color,
         paddingHorizontal: 12,
-        paddingVertical: 12,
+        paddingVertical: 16,
         borderRadius: 8,
         ...style
       }}
@@ -44,20 +41,6 @@ const BannerProduct = ({
             lineHeight: 16,
             ...titleStyle
           }}
-        />
-        <Button
-          text='See all'
-          onPress={onPress}
-          variant='outline'
-          style={{
-            borderColor: useThemeColor({}, 'white'),
-            paddingVertical: 6,
-          }}
-          textStyles={{
-            color: useThemeColor({}, 'white')
-          }}
-          icon={<ArrowRight2 size={16} color={useThemeColor({}, 'white')} />}
-          iconPosition='right'
         />
       </Row>
     </View>

@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "pbl6",
+    "name": "Medicare Central",
     "slug": "pbl6",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/ic_launcher-web.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -17,13 +17,11 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/ic_launcher-web.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": [
-        "android.permission.RECORD_AUDIO"
-      ],
-      "package": "com.dinhvan111.pbl6"
+      "package": "com.dinhvan111.pbl6",
+      "versionName": "1.0.2"
     },
     "web": {
       "bundler": "metro",
@@ -45,7 +43,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "712debd5-6e31-4071-a631-4e62da1dcd1e"
+        "projectId": "3ba92e71-dc1c-44b6-97b4-8954b5b86873"
       }
     }
   }

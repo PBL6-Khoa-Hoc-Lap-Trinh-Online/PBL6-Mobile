@@ -22,6 +22,7 @@ const Row = ({
 }: RowProps) => {
     return (
         <View
+            testID="row"
             style={{
                 display: "flex",
                 flexDirection: "row",

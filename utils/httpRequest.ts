@@ -2,7 +2,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { router } from "expo-router";
 
-
 const httpRequests = axios.create({
     baseURL: process.env.EXPO_PUBLIC_BASE_URL,
     headers: {
@@ -14,7 +13,7 @@ httpRequests.interceptors.request.use(async (config) => {
     // Handle token here ...
     const user = await AsyncStorage.getItem("user");
     const token = user ? JSON.parse(user).access_token : null;
-    config.headers.Authorization = token ? `Bearer ${token}` : '';
+    config.headers.Authorization = token ? `Bearer ${token}` : "";
     return config;
 });
 
@@ -25,11 +24,15 @@ httpRequests.interceptors.response.use(
         }
         return response;
     },
-    async(error) => {
+    async (error) => {
         // Handle errors
         if (error.response.data.error === "Unauthenticated") {
-            // Handle unauthenticated error here ...
-            await AsyncStorage.removeItem("user");
+            console.log("Unauthenticated", error.config.url);
+            if (error.config.url !== "/cart") {
+                console.log("Unauthenticated 2", error.response);
+                await AsyncStorage.removeItem("user");
+                router.replace("/(auth)/signIn");
+            }
         }
         throw error.response.data;
     }
