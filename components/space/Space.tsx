@@ -10,6 +10,7 @@ interface SpaceProps {
 const Space = ({ size }: SpaceProps) => {
     return (
         <View
+            testID="space"
             style={{
                 width: size.width,
                 height: size.height,

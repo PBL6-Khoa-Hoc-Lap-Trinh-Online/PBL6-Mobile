@@ -22,8 +22,8 @@ interface TitleComponentProps {
 
 const ThemeText = ({
     text,
-    ellipsizeMode="clip",
-    numOfLines=10,
+    ellipsizeMode = "clip",
+    numOfLines = 10,
     style,
     children,
     type = "large",
@@ -34,6 +34,7 @@ const ThemeText = ({
     if (type === "title")
         return (
             <Text
+                testID="themeText"
                 ellipsizeMode={ellipsizeMode}
                 numberOfLines={numOfLines}
                 style={{
@@ -50,13 +51,13 @@ const ThemeText = ({
     if (type === "large")
         return (
             <Text
+                testID="themeText"
                 ellipsizeMode={ellipsizeMode}
                 numberOfLines={numOfLines}
                 style={{
                     color: textColorTheme,
                     fontSize: 36,
                     fontWeight: "bold",
-
                     ...style,
                 }}
             >
@@ -66,7 +67,9 @@ const ThemeText = ({
 
     if (type === "link")
         return (
-            <TouchableOpacity onPress={onPress}>
+            <TouchableOpacity onPress={onPress}
+                testID="themeText"
+            >
                 <Text
                     ellipsizeMode={ellipsizeMode}
                     numberOfLines={numOfLines}
@@ -84,6 +87,7 @@ const ThemeText = ({
     if (type === "medium")
         return (
             <Text
+                testID="themeText"
                 ellipsizeMode={ellipsizeMode}
                 numberOfLines={numOfLines}
                 style={{
@@ -100,6 +104,7 @@ const ThemeText = ({
     if (type === "small")
         return (
             <Text
+                testID="themeText"
                 ellipsizeMode={ellipsizeMode}
                 numberOfLines={numOfLines}
                 style={{

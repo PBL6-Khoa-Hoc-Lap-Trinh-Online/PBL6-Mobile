@@ -12,7 +12,7 @@ import {
 } from "react";
 
 interface AuthContextType {
-    user: UserType | null;
+    user: UserType | undefined;
     refreshUser : () => void;
     signIn: (email: string, password: string) => Promise<void>;
     signOut: () => Promise<void>;
@@ -22,14 +22,16 @@ interface AuthContextType {
         password: string,
         confirmPassword: string
     ) => Promise<void>;
+    resetUser: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
-    user: null,
+    user: undefined,
     signIn: async () => {},
     signOut: async () => {},
     signUp: async () => {},
-    refreshUser: async () => {}
+    refreshUser: async () => {},
+    resetUser: () => {},
 });
 
 export function useAuth() {
@@ -37,6 +39,7 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }: PropsWithChildren) {
+    
     const signIn = async (email: string, password: string) => {
         const rs = await signInApi(email, password);
         if (rs.status === 200) {
@@ -46,7 +49,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
         }
     };
     const signOut = async () => {
-        setUser(null);
+        setUser(undefined);
+        await AsyncStorage.removeItem("user");
+        router.replace("/(auth)/signIn");
     };
     const signUp = async (
         fullName: string,
@@ -56,7 +61,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     ) => {
         await registerApi(fullName, email, password, confirmPassword);
     };
-    const [user, setUser] = useState<UserType | null>(null);
+    const [user, setUser] = useState<UserType | undefined>(undefined);
 
     useEffect(() => {
         (async () => {
@@ -64,19 +69,21 @@ export function AuthProvider({ children }: PropsWithChildren) {
             if (user) {
                 setUser(JSON.parse(user));
             } else {
-                setUser(null);
+                setUser(undefined);
             }
         })();
     }, []);
-
-    const rootSegment = useSegments()[0];
-    useEffect(() => {
-        if (!user && rootSegment !== "(auth)") {
-            router.replace("/(auth)/signIn");
-        } else if (user && rootSegment !== "(app)") {
-            router.replace("/(app)/");
-        }
-    }, [user, rootSegment]);
+    // const rootSegment = useSegments()[0];
+    // useEffect(() => {
+    //     (async () => {
+    //         const user = await AsyncStorage.getItem("user");
+    //         if (!user && rootSegment !== "(auth)") {
+    //             router.replace("/(auth)/signIn");
+    //         } else if (user && rootSegment !== "(app)") {
+    //             router.replace("/(app)/");
+    //         }
+    //     })()
+    // }, [user, rootSegment]);
 
     return (
         <AuthContext.Provider value={{ user, signIn, signOut, signUp,
@@ -90,6 +97,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
                         ...newUser.data
                     }));
                 }
+            },
+            resetUser: () => {
+                setUser(undefined);
             }
         }}>
             {children}

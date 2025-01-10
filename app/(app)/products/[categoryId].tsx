@@ -4,40 +4,43 @@ import { getProductsByCategoryIdApi } from "@/apis/product";
 import Badge from "@/components/badge/Badge";
 import BreadCrumb from "@/components/breadCrumb/BreadCrumb";
 import Button from "@/components/button/Button";
-import CategoryCard from "@/components/categoryCard/CategoryCard";
+import CategoryCard from "@/components/card/categoryCard/CategoryCard";
+import ProductCard from "@/components/card/productCard/ProductCard";
 import Input from "@/components/input/Input";
-import ProductCard from "@/components/productCard/ProductCard";
 import Row from "@/components/row/Row";
 import Space from "@/components/space/Space";
 import ThemeText from "@/components/themeText/ThemeText";
 import ThemeView from "@/components/themeView/ThemeView";
-import { Notification } from "iconsax-react-native";
+import { useAuth } from "@/context/auth";
 import { CartContext } from "@/context/cart";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { Brand } from "@/type/brandType";
 import { CategoryType } from "@/type/categoryType";
 import { ProductType } from "@/type/productType";
+import { isTablet } from "@/utils/isTablet";
 import BottomSheet, {
     BottomSheetScrollView
 } from "@gorhom/bottom-sheet";
 import { Href, router, useLocalSearchParams } from "expo-router";
-import { Back, Filter, ShoppingCart } from "iconsax-react-native";
+import { ArrowDown2, ArrowUp2, Back, DocumentFilter, Notification, ShoppingCart } from "iconsax-react-native";
 import React, {
     useContext,
     useEffect,
     useMemo,
-    useRef
+    useRef,
+    useState
 } from "react";
 import { Dimensions, FlatList, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
 
 const Products = () => {
+    const { user } = useAuth()
     const { categoryId } = useLocalSearchParams<{
         categoryId: string;
     }>();
     const screenWidth = Dimensions.get('screen').width
-    let width = Dimensions.get('screen').width / 2 - 32
+    let width = Dimensions.get('screen').width - 16
     const { cartItems } = useContext(CartContext);
 
     const primaryColor = useThemeColor({}, "primary");
@@ -57,6 +60,8 @@ const Products = () => {
     const [moreBrands, setMoreBrands] = React.useState<boolean>(false);
 
     const snapPoints = useMemo(() => ["92%"], []);
+    const [page, setPage] = useState(1);
+    const [sortlatest, setSortLatest] = useState(true);
 
     const bottomSheetRef = useRef<BottomSheet>(null);
     const handleOpenBottomSheet = async () => {
@@ -72,6 +77,23 @@ const Products = () => {
             try {
                 const category = await getCategoryByIdApi(categoryId);
                 setCategories(category.data?.children ?? []);
+
+                const categoryF = (category.data?.children ?? [])[0]
+                const rs = await getProductsByCategoryIdApi(
+                    categoryF.category_name,
+                    page,
+                    8,
+                    'product_price',
+                    sortlatest,
+                );
+                if (rs.data?.data?.length === (0 || undefined)) {
+                    return
+                }
+                if (page === 1) {
+                    setProducts(rs.data?.data ?? []);
+                } else {
+                    setProducts((prev) => [...prev, ...rs.data?.data ?? []]);
+                }
             } catch (error: any) {
                 Toast.show({
                     text1: "Error",
@@ -82,19 +104,43 @@ const Products = () => {
         })();
     }, []);
 
+    const fetchOrders = async () => {
+        const category = categories[activeIndex];
+        console.log(category, 'category')
+        const rs = await getProductsByCategoryIdApi(
+            category.category_name,
+            page,
+            8,
+            'product_price',
+            sortlatest,
+            minimumPrice ?? 0,
+            maximumPrice ?? 100000,
+            selectedBrand.map((item) => item.brand_name)
+        );
+        if (rs.data?.data?.length === (0 || undefined)) {
+            return
+        }
+        if (rs.data.last_page < page) {
+            return
+        }
+        if (page === 1) {
+            setProducts(rs.data?.data ?? []);
+        } else {
+            setProducts((prev) => [...prev, ...rs.data?.data ?? []]);
+        }
+    }
+
     useEffect(() => {
         (async () => {
-            try {
-                const category = categories[activeIndex];
-                const products = await getProductsByCategoryIdApi(
-                    category.category_name
-                );
-                setProducts(products.data ?? []);
-            } catch (error: any) {
-                console.log(error);
-            }
-        })();
-    }, [activeIndex]);
+            fetchOrders();
+        })()
+    }, [page])
+
+    useEffect(() => {
+        setPage(1);
+        setProducts([]);
+        fetchOrders()
+    }, [activeIndex, sortlatest])
 
     useEffect(() => {
         (async () => {
@@ -108,7 +154,7 @@ const Products = () => {
             }
             setBreadCrumbs(breadCrumbs);
         })();
-    }, [categoryId]);
+    }, []);
 
     useEffect(() => {
         switch (selectedRangePrice) {
@@ -134,16 +180,16 @@ const Products = () => {
     }, [selectedRangePrice])
 
     return (
-        <ThemeView>
+        <ThemeView style={{
+            position: 'relative',
+        }}>
             <Row
                 style={{
                     justifyContent: "space-between",
                     backgroundColor: useThemeColor({}, "background"),
                     paddingVertical: 8,
                     paddingHorizontal: 16,
-                    marginTop: -16,
                     marginHorizontal: -16,
-                    marginBottom: 16,
                 }}
             >
                 <Button
@@ -156,61 +202,56 @@ const Products = () => {
                 <BreadCrumb breadCrumbs={breadCrumbs} style={{
                     flex: 1,
                 }} />
-                <Button
-                    variant="circle"
-                    icon={
-                        <Notification
-                            size={20}
-                            color={useThemeColor({}, "text")}
-                        />
-                    }
-                    onPress={() => { }}
-                />
-                <Badge count={cartItems.length}>
-                    <Button
-                        variant="circle"
-                        icon={
-                            <ShoppingCart
-                                size={20}
-                                color={useThemeColor({}, "text")}
+                {
+                    user && (
+                        <Badge count={cartItems.length}>
+                            <Button
+                                variant="circle"
+                                icon={
+                                    <ShoppingCart
+                                        size={20}
+                                        color={useThemeColor({}, "text")}
+                                    />
+                                }
+                                onPress={() => {
+                                    router.navigate("/(app)/cart");
+                                }}
                             />
-                        }
-                        onPress={() => {
-                            router.navigate("/(app)/cart");
-                        }}
-                    />
-                </Badge>
+                        </Badge>
+                    )
+                }
             </Row>
-
             <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 style={{
                     flexGrow: 0,
+                    marginBottom: 8
                 }}
             >
                 {categories.map((item, index) => (
                     <CategoryCard
-                        key={item.category_id}
+                        key={index}
                         imageUrl={item.category_thumbnail}
                         title={item.category_name}
                         onPress={() => {
                             setActiveIndex(index);
                         }}
                         style={{
-                            width: 100,
+                            zIndex: 100,
+                            width: isTablet() ? 128 : 100,
                             borderRadius: 8,
-                            margin: 8,
-                            borderWidth: activeIndex === index ? 0.5 : 0,
+                            margin: isTablet() ? 6 : 4,
+                            borderWidth: 0.5,
                             borderColor:
                                 activeIndex === index
                                     ? primaryColor
-                                    : textColor,
+                                    : 'transparent',
 
                         }}
                         imageStyle={{
                             borderRadius: 8,
-                            height: 60,
+                            height: isTablet() ? 128 * 0.6 : 100 * 0.6,
                         }}
                         titleStyle={{
                             color:
@@ -221,46 +262,26 @@ const Products = () => {
                     />
                 ))}
             </ScrollView>
-            <Space size={{ height: 8, width: 0 }} />
             <FlatList
-                ListHeaderComponent={() => (
-                    <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        style={{
-                            flexGrow: 0,
-                            borderRadius: 8,
-                            padding: 8,
-                            backgroundColor: useThemeColor(
-                                {},
-                                "itemBackground"
-                            ),
-                        }}
-                    >
-                        <Button
-                            variant="link"
-                            color="primary"
-                            text="Filter"
-                            onPress={() => {
-                                handleOpenBottomSheet();
-                            }}
-                            icon={
-                                <Filter
-                                    size={16}
-                                    color={useThemeColor({}, "primary")}
-                                />
-                            }
-                        />
-                    </ScrollView>
-                )}
+                onEndReached={() => {
+                    console.log("end reached");
+                    setPage(page + 1);
+                }}
+                onEndReachedThreshold={0.8}
                 data={products}
-                renderItem={({ item }) => (
+                renderItem={({ item, index }) => (
                     <ProductCard
-                        key={item.product_id}
+                        key={index}
                         imageUrls={item.product_images ?? []}
                         title={item.product_name}
-                        price={item.product_price}
-                        sold={item.product_sold}
+                        price={
+                            item.parent_category_name === "Thuốc không kê đơn"
+                                ? item.product_price
+                                : undefined
+                        }
+                        sold={
+                            item.parent_category_name === "Thuốc không kê đơn" ? item.product_sold : undefined
+                        }
                         onPress={() => {
                             router.navigate(
                                 ("/(app)/products/product/" +
@@ -268,19 +289,34 @@ const Products = () => {
                             );
                         }}
                         style={{
-                            width: width, margin: 8, flex: 0
+                            width: isTablet() ? width / 3 - 16 : width / 2 - 8,
+                            margin: isTablet() ? 8 : 4, flex: 0
                         }}
                     />
                 )}
-                keyExtractor={(item) => item.product_id.toString()}
-                numColumns={2}
-                columnWrapperStyle={{ justifyContent: 'space-between', alignItems: 'flex-start' }}
+                keyExtractor={(item, index) => item.product_id.toString() + index}
+                numColumns={isTablet() ? 3 : 2}
+                columnWrapperStyle={{ justifyContent: 'flex-start', alignItems: 'flex-start' }}
                 style={{
                     flex: 0,
                     height: "50%",
                 }}
             />
-
+            <Row style={{
+                backgroundColor: useThemeColor({}, 'itemBackground'),
+            }}>
+                <Button
+                    variant="circle"
+                    icon={<DocumentFilter size={20} color={useThemeColor({}, 'text')} />}
+                    onPress={() => {
+                        handleOpenBottomSheet();
+                    }}
+                    style={{
+                        paddingHorizontal: 16,
+                    }}
+                />
+                <ArrowUp2 size={20} color={useThemeColor({}, 'text')} />
+            </Row>
             {/* // BottomSheet  */}
             <BottomSheet
                 ref={bottomSheetRef}
@@ -288,7 +324,8 @@ const Products = () => {
                 enablePanDownToClose={true}
                 index={-1}
                 backgroundStyle={{
-                    backgroundColor: useThemeColor({}, "border"),
+                    borderColor: useThemeColor({}, "border"),
+                    borderWidth: 1,
                 }}
             >
                 <BottomSheetScrollView
@@ -459,6 +496,8 @@ const Products = () => {
                                         onPress={() => {
                                             setMoreBrands(false);
                                         }}
+                                        icon={<ArrowUp2 size={20} color={useThemeColor({}, 'primary')} />}
+                                        iconPosition="right"
                                     />
                                 ) : (
                                     <Button
@@ -467,6 +506,8 @@ const Products = () => {
                                         onPress={() => {
                                             setMoreBrands(true);
                                         }}
+                                        icon={<ArrowDown2 size={20} color={useThemeColor({}, 'primary')} />}
+                                        iconPosition="right"
                                     />
                                 )
                             }
@@ -474,15 +515,14 @@ const Products = () => {
                         <Space size={{ height: 16, width: 0 }} />
                         <ScrollView
                             style={{
-                                maxHeight: screenWidth,
+                                maxHeight: screenWidth * 0.6,
 
                             }}>
                             <View style={{
                                 display: 'flex',
-                                flexDirection: 'row',
-                                flexWrap: 'wrap',
+                                flexDirection: 'column',
                             }}>
-                                {brands.slice(0, moreBrands ? -1 : 6).map((brand) => (
+                                {brands.slice(0, moreBrands ? -1 : 12).map((brand) => (
                                     <Button
                                         variant="outline"
                                         text={brand.brand_name}
@@ -494,8 +534,8 @@ const Products = () => {
                                         }
                                         textStyles={{
                                             color: selectedBrand.includes(brand) ?
-                                            primaryColor :
-                                            textColor
+                                                primaryColor :
+                                                textColor
                                         }}
                                         onPress={() => {
                                             if (selectedBrand.includes(brand)) {
@@ -507,6 +547,7 @@ const Products = () => {
                                         style={{
                                             marginBottom: 8,
                                             marginRight: 8,
+                                            borderWidth: 1
                                         }}
                                     />
                                 ))}
@@ -546,7 +587,12 @@ const Products = () => {
                             <Button
                                 text="Apply"
                                 color="primary"
-                                onPress={() => { }}
+                                onPress={async () => {
+                                    setPage(1);
+                                    setProducts([]);
+                                    fetchOrders();
+                                    bottomSheetRef.current?.close();
+                                }}
                                 style={{
                                     width: '100%',
                                 }}

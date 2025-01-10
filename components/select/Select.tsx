@@ -2,9 +2,9 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import { ArrowDown2 } from "iconsax-react-native";
 import React from "react";
 import { Text, TouchableOpacity, View, ViewStyle } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import Row from "../row/Row";
 import ThemeText from "../themeText/ThemeText";
-import { FlatList, ScrollView } from "react-native-gesture-handler";
 
 export interface OptionType {
     label: string;
@@ -39,7 +39,9 @@ const Select = ({
     const itemBackground = useThemeColor({}, "itemBackground");
 
     return (
-        <View>
+        <View
+            testID="select"
+        >
             {label && (
                 <Text
                     style={{
@@ -70,6 +72,8 @@ const Select = ({
                             flex: 1,
                             paddingHorizontal: 8,
                             paddingVertical: 14,
+                            backgroundColor: (value && !open) ? backgroundColor : itemBackground,
+                            borderRadius: 8,
                         }}
                     >
                         <ThemeText
@@ -79,7 +83,7 @@ const Select = ({
                                 !value
                                     ? placeHolder
                                     : options.find((opt) => opt.value === value)
-                                          ?.label
+                                        ?.label
                             }
                         />
                         <ArrowDown2
@@ -104,7 +108,7 @@ const Select = ({
                                         setOpen(false);
                                     }}
                                     style={{
-                                        backgroundColor: itemBackground,
+                                        backgroundColor: backgroundColor,
                                         padding: 16,
                                         borderBottomWidth: 1,
                                         borderBottomColor: borderColor,
@@ -129,7 +133,7 @@ const Select = ({
                                 setOpen(false);
                             }}
                             style={{
-                                backgroundColor: itemBackground,
+                                backgroundColor: backgroundColor,
                                 padding: 16,
                                 borderBottomWidth: 1,
                                 borderBottomColor: borderColor,

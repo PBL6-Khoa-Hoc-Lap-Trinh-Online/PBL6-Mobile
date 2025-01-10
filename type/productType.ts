@@ -34,4 +34,5 @@ export interface ProductType {
     brand_is_delete: number;
     brand_created_at: string;
     brand_updated_at: string;
+    parent_category_name: string;
 }

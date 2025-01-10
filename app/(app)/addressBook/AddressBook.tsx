@@ -17,15 +17,19 @@ import { Address } from "@/type/addressType";
 import { District, Province, Ward } from "@/type/locationType";
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
-import { AddSquare, Back, Trash } from "iconsax-react-native";
+import { AddSquare, Back, Edit, Trash } from "iconsax-react-native";
 import React, { useEffect, useMemo, useRef } from "react";
 import { TouchableOpacity, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
 
 const AddressBook = () => {
     const [addressList, setAddressList] = React.useState<Address[]>([]);
     const itemBackground = useThemeColor({}, "itemBackground");
     const white = useThemeColor({}, "white");
+    const border = useThemeColor({}, "border");
+    const icon = useThemeColor({}, "icon");
+    const primary = useThemeColor({}, "primary");
 
     // state
     const [isButtonAddLoading, setIsButtonAddLoading] = React.useState(false);
@@ -96,12 +100,21 @@ const AddressBook = () => {
         receiverName: string,
         receiverPhone: string,
         receiverAddress: string,
+        receiverProvince: string,
+        receiverDistrict: string,
+        receiverWard: string,
         receiverAddressId: number
     ) => {
+        handleSelectProvince(receiverProvince);
+        handleSelectDistrict(receiverDistrict);
+
         setReceiverAddressIdSelected(receiverAddressId);
         setReceiverNameSelected(receiverName);
         setReceiverPhoneSelected(receiverPhone);
-        setReceiverAddressSelected(receiverAddress);
+        setReceiverProvinceSelected(receiverProvince);
+        setReceiverDistrictSelected(receiverDistrict);
+        setReceiverWardSelected(receiverWard);
+        setReceiverStreetNameSelected(receiverAddress);
 
         bottomSheetUpdateRef.current?.snapToIndex(1);
     };
@@ -141,23 +154,14 @@ const AddressBook = () => {
 
         setIsButtonAddLoading(true);
 
-        const wardName = wards.find(
-            (w) => w.id.toString() === receiverWard
-        )?.name;
-        const districtName = districts.find(
-            (d) => d.id.toString() === receiverDistrict
-        )?.name;
-        const provinceName = provinces.find(
-            (p) => p.id.toString() === receiverProvince
-        )?.name;
-
-        const receiverAddress = `${receiverStreetName}, ${wardName}, ${districtName}, ${provinceName}`;
-        // call api to add address
         try {
-            const rs = await addAddress(
+            await addAddress(
                 receiverName,
                 receiverPhone,
-                receiverAddress
+                receiverProvince,
+                receiverDistrict,
+                receiverWard,
+                receiverStreetName
             );
             bottomSheetRef.current?.close();
             fetchAddressList();
@@ -182,35 +186,27 @@ const AddressBook = () => {
 
             return;
         }
-
         setIsButtonUpdateLoading(true);
-
-        // call api to add address
         try {
-            let receiverAddressChange = receiverAddressSelected;
-            if (
-                receiverProvinceSelected !== "" &&
-                receiverDistrictSelected !== "" &&
-                receiverWardSelected !== "" &&
-                receiverStreetNameSelected !== ""
-            ) {
-                const provinceName = provinces.find(
-                    (p) => p.id.toString() === receiverProvinceSelected
-                )?.name;
-                const districtName = districts.find(
-                    (d) => d.id.toString() === receiverDistrictSelected
-                )?.name;
-                const wardName = wards.find(
-                    (w) => w.id.toString() === receiverWardSelected
-                )?.name;
-                receiverAddressChange = `${receiverStreetNameSelected}, ${wardName}, ${districtName}, ${provinceName}`;
-            }
+
+            console.log(
+                receiverAddressIdSelected,
+                receiverNameSelected,
+                receiverPhoneSelected,
+                receiverProvinceSelected,
+                receiverDistrictSelected,
+                receiverWardSelected,
+                receiverStreetNameSelected
+            )
 
             const rs = await updateAddress(
                 receiverAddressIdSelected,
                 receiverNameSelected,
                 receiverPhoneSelected,
-                receiverAddressChange
+                receiverProvinceSelected,
+                receiverDistrictSelected,
+                receiverWardSelected,
+                receiverStreetNameSelected
             );
             bottomSheetUpdateRef.current?.close();
             fetchAddressList();
@@ -231,9 +227,9 @@ const AddressBook = () => {
             <Row
                 style={{
                     justifyContent: "space-between",
-                    backgroundColor: useThemeColor({}, "itemBackground"),
+                    backgroundColor: useThemeColor({}, "background"),
                     paddingVertical: 8,
-                    paddingHorizontal: 16,
+                    paddingHorizontal: 8,
                 }}
             >
                 <Button
@@ -248,63 +244,69 @@ const AddressBook = () => {
 
                 <Button
                     variant="circle"
-                    icon={<Back size={20} color={useThemeColor({}, "text")} />}
-                    onPress={() => {}}
+                    onPress={() => { }}
                     style={{ opacity: 0, pointerEvents: "none" }}
                 />
             </Row>
 
             <ThemeView
-                style={{
-                    paddingHorizontal: 0,
-                }}
             >
-                {addressList.map((address, index) => {
-                    return (
-                        <View
-                            key={index}
-                            style={{
-                                padding: 16,
-                                backgroundColor: itemBackground,
-                            }}
-                        >
-                            <Row justifyContent="space-between">
+                <ScrollView style={{
+                    paddingHorizontal: 8
+                }}>
+                    {addressList.map((address, index) => {
+                        return (
+                            <View
+                                key={index}
+                                style={{
+                                    padding: 16,
+                                    borderColor: border,
+                                    borderWidth: 1,
+                                    borderRadius: 8,
+                                    marginBottom: 8,
+                                }}
+                            >
+                                <Row justifyContent="space-between">
+                                    <ThemeText
+                                        type="medium"
+                                        style={{
+                                            fontWeight: "bold",
+                                        }}
+                                        text={address.receiver_name}
+                                    />
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            handleOpenBottomSheetUpdate(
+                                                address.receiver_name,
+                                                address.receiver_phone,
+                                                address.receiver_address,
+                                                address.province_id.toString(),
+                                                address.district_id.toString(),
+                                                address.ward_id.toString(),
+                                                address.receiver_address_id,
+                                            );
+                                        }}
+                                    >
+                                        <Edit size={20} color={primary} />
+                                    </TouchableOpacity>
+                                </Row>
+                                <Space size={{ height: 8, width: 0 }} />
                                 <ThemeText
+                                    text={address.receiver_phone}
                                     type="medium"
-                                    style={{
-                                        fontWeight: "bold",
-                                    }}
-                                    text={address.receiver_name}
-                                />
-                                <ThemeText
-                                    type="link"
                                     style={{}}
-                                    text="Update"
-                                    onPress={async () => {
-                                        await handleOpenBottomSheetUpdate(
-                                            address.receiver_name,
-                                            address.receiver_phone,
-                                            address.receiver_address,
-                                            address.receiver_address_id
-                                        );
-                                    }}
                                 />
-                            </Row>
-                            <Space size={{ height: 8, width: 0 }} />
-                            <ThemeText
-                                text={address.receiver_phone}
-                                type="medium"
-                                style={{}}
-                            />
-                            <Space size={{ height: 8, width: 0 }} />
-                            <ThemeText
-                                text={address.receiver_address}
-                                type="medium"
-                                style={{}}
-                            />
-                        </View>
-                    );
-                })}
+                                <Space size={{ height: 8, width: 0 }} />
+                                <ThemeText
+                                    text={`${address.receiver_address}, ${address.ward_name}, ${address.district_name}, ${address.province_name}`}
+                                    type="medium"
+                                    style={{}}
+                                />
+                            </View>
+                        );
+                    })}
+                    <Space size={{ height: 64, width: 0 }} />
+                </ScrollView>
 
                 <Space size={{ height: 32, width: 0 }} />
                 <View
@@ -334,6 +336,10 @@ const AddressBook = () => {
                 snapPoints={snapPoints}
                 enablePanDownToClose={true}
                 index={-1}
+                backgroundStyle={{
+                    borderColor: useThemeColor({}, "border"),
+                    borderWidth: 1
+                }}
             >
                 <BottomSheetScrollView
                     style={{
@@ -347,7 +353,7 @@ const AddressBook = () => {
                             padding: 16,
                             backgroundColor: useThemeColor(
                                 {},
-                                "itemBackground"
+                                "background"
                             ),
                         }}
                     >
@@ -359,7 +365,7 @@ const AddressBook = () => {
                             padding: 16,
                             backgroundColor: useThemeColor(
                                 {},
-                                "itemBackground"
+                                "background"
                             ),
                         }}
                     >
@@ -451,7 +457,7 @@ const AddressBook = () => {
                             padding: 16,
                             backgroundColor: useThemeColor(
                                 {},
-                                "itemBackground"
+                                "background"
                             ),
                         }}
                     >
@@ -472,6 +478,10 @@ const AddressBook = () => {
                 snapPoints={snapPoints}
                 enablePanDownToClose={true}
                 index={-1}
+                backgroundStyle={{
+                    borderColor: useThemeColor({}, "border"),
+                    borderWidth: 1
+                }}
             >
                 <BottomSheetScrollView
                     style={{
@@ -485,7 +495,7 @@ const AddressBook = () => {
                             padding: 16,
                             backgroundColor: useThemeColor(
                                 {},
-                                "itemBackground"
+                                "background"
                             ),
                         }}
                     >
@@ -497,7 +507,7 @@ const AddressBook = () => {
                             padding: 16,
                             backgroundColor: useThemeColor(
                                 {},
-                                "itemBackground"
+                                "background"
                             ),
                         }}
                     >
@@ -519,10 +529,16 @@ const AddressBook = () => {
                             placeholder="Enter receiver phone"
                         />
                         <Space size={{ height: 16, width: 0 }} />
-                        <Input
-                            label="Current Address"
-                            value={receiverAddressSelected}
-                            disabled={true}
+
+                        <ThemeText
+                            text="Address"
+                            type="title"
+                            style={{
+                                fontSize: 16,
+                                fontWeight: "500",
+                                marginBottom: 4,
+                                marginLeft: 4,
+                            }}
                         />
                         <Space size={{ height: 16, width: 0 }} />
                         <Select
@@ -583,10 +599,9 @@ const AddressBook = () => {
                     <Space size={{ height: 16, width: 0 }} />
                     <TouchableOpacity
                         style={{
-                            backgroundColor: useThemeColor(
-                                {},
-                                "itemBackground"
-                            ),
+                            marginHorizontal: 16,
+                            borderRadius: 8,
+                            backgroundColor: useThemeColor({}, 'itemBackground')
                         }}
                         onPress={async () => {
                             // call api to delete address
@@ -600,10 +615,9 @@ const AddressBook = () => {
                                     text1: "Delete address successfully",
                                     type: 'success',
                                 });
-                            } catch (error) {
-                                console.log(error);
+                            } catch (error: any) {
                                 Toast.show({
-                                    text1: "Delete address failed",
+                                    text1: `${error.messages}`,
                                     type: 'error',
                                 });
                             }
@@ -634,7 +648,7 @@ const AddressBook = () => {
                             padding: 16,
                             backgroundColor: useThemeColor(
                                 {},
-                                "itemBackground"
+                                "background"
                             ),
                         }}
                     >

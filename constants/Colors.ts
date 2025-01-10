@@ -3,38 +3,41 @@
  * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
  */
 
-
 export const Colors = {
-  light: {
-    text: '#11181C',
-    icon: '#687076',
+    light: {
+        text: "#11181C",
+        icon: "#687076",
 
-    background: '#ffffff',
-    itemBackground: '#f5f7fa',
-    border: '#ECECEC',
+        background: "#ffffff",
+        itemBackground: "#f5f7fa",
+        border: "#ECECEC",
 
-    link: '#1A51A2',
-    primary: '#1A51A2',
-    secondary: '#FD6E87',
-    danger: '#C62E2E',
+        link: "#1A51A2",
+        primary: "#1A51A2",
+        primaryLight: "#f5f8ff",
+        secondary: "#FD6E87",
+        danger: "#C62E2E",
 
-    red: '#ff4d4f',
-    white: '#fff',
-  },
-  dark: {
-    text: '#ECEDEE',
-    background: '#000',
-    itemBackground: '#141414',
-    icon: '#9BA1A6',
-    border: '#424242',
+        red: "#ff4d4f",
+        redLight: "#ff7376",
+        white: "#fff",
+    },
+    dark: {
+        text: "#11181C",
+        icon: "#687076",
 
-    link: '#FF885B',
-    primary: '#FF885B',
-    secondary: '#FD6E87',
-    danger: '#C62E2E',
+        background: "#ffffff",
+        itemBackground: "#f5f7fa",
+        border: "#ECECEC",
 
-    red: '#ff4d4f',
-    white: '#fff',
-  },
+        link: "#1A51A2",
+        primary: "#1A51A2",
+        primaryLight: "#f5f8ff",
+        secondary: "#FD6E87",
+        danger: "#C62E2E",
 
+        red: "#ff4d4f",
+        redLight: "#ff7376",
+        white: "#fff",
+    },
 };

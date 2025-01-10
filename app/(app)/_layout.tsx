@@ -13,11 +13,7 @@ export default function AppLayout() {
                 screenOptions={{
                     headerShown: false,
                 }}
-            >
-                <Stack.Screen name="(tabs)" />
-                <Stack.Screen name="cart/index" options={{}} />
-                <Stack.Screen name="products/[categoryId]" />
-            </Stack>
+            />
         </SafeAreaView>
     );
 }

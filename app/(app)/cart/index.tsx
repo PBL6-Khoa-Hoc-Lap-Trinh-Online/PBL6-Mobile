@@ -1,6 +1,5 @@
-import { deleteCardApi, getCartApi, updateCartApi } from "@/apis/cart";
 import Button from "@/components/button/Button";
-import CartCard from "@/components/cartCard/CartCard";
+import CartCard from "@/components/card/cartCard/CartCard";
 import CheckBox from "@/components/checkBox/CheckBox";
 import Row from "@/components/row/Row";
 import Space from "@/components/space/Space";
@@ -14,9 +13,9 @@ import { Href, router } from "expo-router";
 import { Back } from "iconsax-react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { View } from "react-native";
+import ConfirmationModal from "react-native-confirmation";
 import { FlatList } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
-import ConfirmationModal from "react-native-confirmation";
 
 const Card = () => {
     const { cartItems, updateProductInCart, removeProductFromCart } =
@@ -46,17 +45,11 @@ const Card = () => {
     };
 
     return (
-        <View
-            style={{
-                flex: 1,
-            }}
-        >
+        <ThemeView>
             <Row
                 style={{
                     justifyContent: "space-between",
                     backgroundColor: useThemeColor({}, "background"),
-                    paddingVertical: 8,
-                    paddingHorizontal: 16,
                 }}
             >
                 <Button
@@ -78,11 +71,10 @@ const Card = () => {
                     }}
                 />
             </Row>
-
             <ThemeView style={{}}>
                 <FlatList
                     data={cartItems}
-                    renderItem={({ item }) => (
+                    renderItem={({ item, index }) => (
                         <CartCard
                             onPress={() => {
                                 router.navigate(
@@ -103,7 +95,7 @@ const Card = () => {
                                     });
                                 }
                             }}
-                            key={item.product_id}
+                            key={index}
                             productImage={item.product_images?.[0] ?? ""}
                             productName={item.product_name}
                             cartPrice={Number.parseFloat(item.cart_price)}
@@ -126,10 +118,9 @@ const Card = () => {
                         />
                     )}
                     contentContainerStyle={{
-                        gap: 16,
+                        gap: 8,
                     }}
                 />
-
                 <Space size={{ height: 16, width: 0 }} />
                 <Row
                     style={{
@@ -137,6 +128,7 @@ const Card = () => {
                         borderRadius: 8,
                         padding: 16,
                         backgroundColor: useThemeColor({}, "itemBackground"),
+                        marginBottom: 16,
                     }}
                 >
                     <CheckBox
@@ -155,7 +147,9 @@ const Card = () => {
                             }
                         }}
                     />
-                    <Row>
+                    <Row style={{
+                        paddingHorizontal: -8,
+                    }}>
                         <View
                             style={{
                                 flexDirection: "column",
@@ -188,7 +182,19 @@ const Card = () => {
                         <Button
                             color="primary"
                             text="Checkout"
-                            onPress={() => { }}
+                            onPress={() => {
+                                const cartidsSelected = cartItems.filter(
+                                    (item) => {
+                                        return checkedList.includes(
+                                            item.product_id
+                                        );
+                                    }
+                                ).map((item) => item.cart_id);
+                                router.navigate(
+                                    ("/(app)/checkout/checkoutcarts/" +
+                                        JSON.stringify(cartidsSelected)) as Href
+                                );
+                            }}
                             style={{
                                 paddingVertical: 12,
                                 paddingHorizontal: 16,
@@ -203,7 +209,6 @@ const Card = () => {
                 setIsVisible={setIsVisible}
                 message="Are you sure you want to delete?"
                 onConfirm={async () => {
-                    console.log("Confirm");
                     try {
                         const cartItemDelete = cartItems.filter(
                             (item) => {
@@ -227,7 +232,7 @@ const Card = () => {
                     }
                 }}
             />
-        </View>
+        </ThemeView>
     );
 };
 

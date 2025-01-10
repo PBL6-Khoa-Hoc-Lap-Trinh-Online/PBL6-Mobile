@@ -10,6 +10,7 @@ interface BadgeProps {
 const Badge = ({ count, children }: BadgeProps) => {
     return (
         <View
+            testID="badge"
             style={{
                 position: "relative",
             }}

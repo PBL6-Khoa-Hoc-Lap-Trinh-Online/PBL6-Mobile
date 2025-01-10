@@ -23,39 +23,28 @@ export const updateProfileCurrentUser = async (
         email: user_email,
     })
 
-    
-
     return response
 }
 
 export const updateProfileImageCurrentUser = async (
     email: string,
     user_fullname: string,
-    imageFile: ImagePickerAsset,
+    imageFile: string,
 ) => {
     const formData = new FormData()
-    // formData.append('user_avatar', {
-    //     name: imageFile.fileName ?? "default_name",
-    //     type: imageFile.type ?? "image/jpeg",
-    //     uri: imageFile.uri,
-    // })
+    formData.append('user_avatar', {
+        name: imageFile,
+        type: "image/jpeg",
+        uri: imageFile,
+    })
     formData.append("email", email)
     formData.append("user_fullname", user_fullname)
 
-    const response = await httpRequests.post("/user/update-profile", formData, {
+    return httpRequests.post("/user/update-profile", formData, {
         headers: {
             "Content-Type": "multipart/form-data",
         }
     })
-
-    const currentUser = await AsyncStorage.getItem("user")
-    if (currentUser) {
-        const user = JSON.parse(currentUser)
-        user.user_avatar = response.data.user_avatar
-        await AsyncStorage.setItem("user", JSON.stringify(user))
-    }
-
-    return response
 }
 
 export const getAllAddress = async () => {
@@ -66,11 +55,17 @@ export const getAllAddress = async () => {
 export const addAddress = async (
     receiver_name: string,
     receiver_phone: string,
+    province_id: string,
+    district_id: string,
+    ward_id: string,
     receiver_address: string,
 ) => {
     const response = await httpRequests.post("/receiver-address/add", {
         receiver_name: receiver_name,
         receiver_phone: receiver_phone,
+        province_id: province_id,
+        district_id: district_id,
+        ward_id: ward_id,
         receiver_address: receiver_address,
     })
     return response
@@ -85,11 +80,17 @@ export const updateAddress = async (
     receiver_address_id: number,
     receiver_name: string,
     receiver_phone: string,
+    province_id: string,
+    district_id: string,
+    ward_id: string,
     receiver_address: string,
 ) => {
     const response = await httpRequests.post(`/receiver-address/update/${receiver_address_id}`, {
         receiver_name: receiver_name,
         receiver_phone: receiver_phone,
+        province_id: province_id,
+        district_id: district_id,
+        ward_id: ward_id,
         receiver_address: receiver_address,
     })
     return response
